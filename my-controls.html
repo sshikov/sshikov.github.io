@@ -5,7 +5,8 @@
 			<div id="params">
 				<paper-dropdown-menu label="Показатель">
 					<paper-listbox class="dropdown-content">
-						<template is="dom-repeat" items="[ 'Средняя сумма заявки на потребительский кредит' ]">
+						<paper-item value="1">Средняя сумма заявки на потребительский кредит</paper-item>
+						<template is="dom-repeat" items="{{parameters}}">
 							<paper-item value="{{item.code}}" data-code="{{item.code}}">{{item.text}}</paper-item>
 						</template>
 					</paper-listbox>
@@ -15,8 +16,8 @@
 			<div id="regions">
 				<paper-dropdown-menu label="Регион">
 					<paper-listbox class="dropdown-content">
-						<template is="dom-repeat" items="[ 'Россия' ]">
-							<paper-item value="{{item.code}}" data-code="60189">Россия</paper-item>
+						<paper-item value="{{item.code}}" data-code="60189">Россия</paper-item>
+						<template is="dom-repeat" items="{{regions}}">
 							<paper-item value="{{item.code}}" data-code="{{item.code}}">{{item.text}}</paper-item>
 						</template>
 					</paper-listbox>
@@ -31,11 +32,11 @@
 		, properties: {
 			regions: {
 				type: Array
-				value: null
+				, value: null
 			}
 			, parameters: {
 				type: Array
-				value: null
+				, value: null
 			}
 		}
 	});
