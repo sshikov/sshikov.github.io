@@ -159,88 +159,13 @@
 	<link href="/css/main.css" rel="stylesheet"/>
 	<script src="/js/leaflet-providers.js"></script>
 	<script src="/js/leaflet.awesome-markers.min.js"></script>
-	<script>
-		function toggleDrawer() {
-			$('#paperDrawerPanel')[0].togglePanel();
-		}
-	</script>
 </head>
 <body unresolved>
-<iron-iconset icons="device action navigation maps image editor" size="24"></iron-iconset>
-<!--
-<iron-a11y-keys id="a11y" target="[[_form]]" keys="enter"
-                  on-keys-pressed="submitForm"></iron-a11y-keys>
-  <form is="iron-form" id="form"
-        method="post"
-        action="{{url}}">
--->
-<platinum-sw-register skip-waiting clients-claim auto-register reload-on-install>
-	<!--
-				<platinum-sw-import-script href="weather-fetch-handler.js"></platinum-sw-import-script>
-				<platinum-sw-fetch handler="weatherFetchHandler"
-								   path="/v1/public/yql"
-								   origin="https://query.yahooapis.com">
-				</platinum-sw-fetch>
-	-->
-	<platinum-sw-cache default-cache-strategy="fastest"></platinum-sw-cache>
-</platinum-sw-register>
-<paper-drawer-panel id="paperDrawerPanel" responsiveWidth="1024"><!--force-narrow -->
-	<paper-header-panel drawer id="drawer">
-		<!--<paper-toolbar>-->
-		<div class="paper-header">Menu
-			<paper-button onclick="toggleDrawer()" raised>close drawer</paper-button>
-		</div>
-		<!--</paper-toolbar>-->
-		<div>
-			<geomarketing-data id="data"></geomarketing-data>
-			<div class="layout vertical">
-				<places-search id="places-search"></places-search>
-				<cian-search id="cian-search"></cian-search>
-
-				<form action="/address" method="get" class="layout vertical" onsubmit="return false;">
-					<div class="layout horizontal">
-						<geomarketing-cities id="cities"></geomarketing-cities>
-						<span class="layout flex"></span>
-						<iron-icon icon="chevron-left" id="drawer-close"></iron-icon>
-					</div>
-				</form>
-				<div style="text-align: left">
-					<template is="dom-bind" id="layers-scope">
-						<!--<iron-iconset name="layers" icons="maps image" size="16" width="16"></iron-iconset>-->
-						<paper-listbox id="multi-layers" multi selected-values="{{selectedLayers}}" label="Слои">
-							<paper-item value="ATMPOS" color="red"><iron-icon icon="maps:local-atm" item-icon style="fill:blue"></iron-icon>ATM/POS</paper-item>
-							<paper-item value="VSP" color="green"><iron-icon icon="maps:local-atm" item-icon style="fill:green"></iron-icon>ВСП</paper-item>
-							<paper-item value="MARKETRENT" color="blue"><iron-icon icon="home" item-icon style="fill:blue"></iron-icon>ЦИАН недвижимость</paper-item>
-							<paper-item value="RENT" color="darkred"><iron-icon icon="home" item-icon style="fill:red"></iron-icon>АСУН</paper-item>
-							<paper-item value="DUE" color="orange"><iron-icon icon="maps:local-atm" item-icon style="fill:orange"></iron-icon>Кредиты</paper-item>
-							<paper-item value="OVERDUE" color="cadetblue"><iron-icon icon="maps:local-atm" item-icon style="fill:cadetblue"></iron-icon>Просроченные кредиты</paper-item>
-							<paper-item value="GRID" color="darkgreen"><iron-icon icon="image:grid-on" item-icon style="fill:darkgreen"></iron-icon>Сетка</paper-item>
-						</paper-listbox>
-					</template>
-				</div>
-				<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D" width="0" height="0" id="closest-place">
-				<geomarketing-settings id="settings-form" style="display: none;"></geomarketing-settings>
-
-				<template is="dom-bind">
-					<geomarketing-geocode id="geomarketing-geocode" street="{{geocode}}"></geomarketing-geocode>
-					<div>
-						<template is="dom-repeat" items="{{addresses}}">
-							<paper-item>{{item}}</paper-item>
-						</template>
-					</div>
-				</template>
-			</div>
-		</div>
-	</paper-header-panel>
-	<paper-header-panel main>
-		<!--<paper-toolbar>-->
-		<div class="paper-header"><paper-button onclick="toggleDrawer()" raised>flip drawer</paper-button></div>
-		<!--</paper-toolbar>-->
-		<div class="layout vertical">
-			<paper-button raised paper-drawer-togle>toggle drawer</paper-button>
-			<geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map>
-		</div>
-	</paper-header-panel>
-</paper-drawer-panel>
+	<iron-iconset icons="device action navigation maps image editor" size="24"></iron-iconset>
+	<div class="layout vertical">
+	</div>
+	<div class="layout vertical">
+		<geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map>
+	</div>
 </body>
 </html>
