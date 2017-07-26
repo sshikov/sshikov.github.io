@@ -10,10 +10,10 @@
 <link rel="import" href="../paper-menu/paper-menu.html">
 <link rel="import" href="../paper-menu/paper-submenu.html">
 <link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="../paper-slider/paper-slider.html">
+<!--link rel="import" href="../paper-slider/paper-slider.html">
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../paper-radio-group/paper-radio-group.html">
-<link rel="import" href="../paper-interval-slider/paper-interval-slider.html">
+<link rel="import" href="../paper-interval-slider/paper-interval-slider.html"-->
 
 <link rel="import" href="/webjars/leaflet-layers-control/leaflet-layers-control.html">
 <link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html">
@@ -21,12 +21,10 @@
 <link rel="import" href="/webjars/google-chart/google-chart.html">
 
 <!--<link rel="import" href="/webjars/iron-a11y-keys/iron-a11y-keys.html">-->
-<link rel="import" href="/webjars/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"/>
+<!--link rel="import" href="/webjars/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"/-->
 
 <script src="/js/Tilelayer.Grayscale.js"></script>
 <script src="/js/leaflet-tilelayer-here.js"></script>
-<script src="http://api-maps.yandex.ru/2.0/?load=package.map&lang=ru-RU" type="text/javascript"></script>
-<script src="/js/Yandex.js"></script>
 <script src="/js/Google.js"></script>
 
 <script src="/js/Leaflet.Control.Custom.js"></script>
@@ -473,13 +471,8 @@
 
                 map.addEventListener("map-ready", (function(e) {
                     console.log("map-ready", e);
-//					var yandexLayer= new L.Yandex("satellite", {attribution: "&copy; Yandex"});
-//					//, {traffic:false, opacity:0.8, overlay:true,
-					var esriLayer= L.tileLayer.provider('Esri')
 					var baseLayer= L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18  });
 					var grayscaleLayer= L.tileLayer.grayscale('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 });
-					var hereLayer= L.tileLayer.here({appId: 'itFu46QqjFn8CY0rfLdB', appCode: 'fUSfSpQI48RWqR4PxOu7Kg', scheme: "hybrid.day", base: "aerial" });
-//					var ggl= new L.Google();
 					var googleStreets= L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
 						maxZoom: 20,
 						subdomains:['mt0','mt1','mt2','mt3']
@@ -500,19 +493,7 @@
 						subdomains:['mt0','mt1','mt2','mt3']
 					});
 
-//					esriLayer.addTo(this.map.map);
-//					baseLayer.addTo(this.map.map);
 					grayscaleLayer.addTo(this.map.map);
-//					hereLayer.addTo(this.map.map);
-//					yandexLayer.addTo(this.map.map);
-//					googleTerrain.addTo(this.map.map);
-
-//	                this.map.map.createPane('pane600').style.zIndex = 600;
-//    	            this.map.map.createPane('pane400').style.zIndex = 400;
-
-//                    this.map.map.createPane('cian-pane');
-//                    this.map.map.createPane('places-pane');
-//                    this.map.map.createPane('tmp-pane');
 
 					$(globals.map.map.zoomControl._container).hide();
 					globals.map.map.zoomControl._container.remove();
@@ -546,14 +527,11 @@
 					var baseLayers= {
 						"OSM": baseLayer
 						, "grayscale": grayscaleLayer
-						, "ArcGIS": esriLayer
 						, "Google Sat": googleSat
 						, "Google Hybrid": googleHybrid
 						, "Google terrain": googleTerrain
 						, "Google streets": googleStreets
 					};
-//							"Yandex": yandexLayer
-//							, "HERE": hereLayer
 					var overlays= {
 					};
 
