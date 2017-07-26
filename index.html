@@ -94,7 +94,7 @@
 		margin: 0;
 		padding: 0;
 		font-family: Arial;
-		text-color: #656989;
+		color: #656989;
 	}
         leaflet-map {
 /*		position: absolute;
@@ -107,10 +107,12 @@
 
 	.top {
 		background: linear-gradient(90deg, #1BAC9B, #66A850)
+		height: 100px;
 	}
 
 	.bottom {
 		background-color: #656989;
+		height: 100px;
 	}
 
         label {
@@ -165,11 +167,17 @@
 	<script src="/js/leaflet.awesome-markers.min.js"></script>
 	<script>
 		var loadGeoJson= function(id) {
-			$.getJSON("https://nominatim.openstreetmap.org/reverse", {'format': 'json', "osm_id": '60189', 'polygon_geojson': 1, "osm_type": "R"}).then(function(json) { 
+			$.getJSON("https://nominatim.openstreetmap.org/reverse", {'format': 'json', "osm_id": id, 'polygon_geojson': 1, "osm_type": "R"}).then(function(json) { 
 				console.log(json.geojson); 
 				L.geojson(json.geojson, {}).addTo($("#map")[0].map)
 			});
 		}
+		$(document).ready(function(e) {
+		});
+
+		$("#map").on("map-ready", function(e) {
+			loadGeoJson(80169);
+		});
 	</script>
 </head>
 <body unresolved>
@@ -194,7 +202,7 @@
 			</leaflet-map>
 
 			<!--geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map-->
-			<div class="flex">график, кнопка и пояснения</div>
+			<div class="">график, кнопка и пояснения</div>
 		</div>
 		<div class="layout horizontal bottom">
 			<span>Показатель</span>
