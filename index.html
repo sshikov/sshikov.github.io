@@ -7,6 +7,9 @@
 	<script src="/webjars/jquery/jquery.min.js"></script>
 	<script src="/js/globalVars.js"></script>
 
+	<script src="/webjars/d3/d3.js"></script>
+	<script src="/js/chroma.js"></script>
+
 	<link href="/webjars/material-design-icons/material-icons.css" rel="stylesheet"/>
 	<link href="/css/font-awesome.css" rel="stylesheet"/>
 	<link href="/css/leaflet.awesome-markers.css" rel="stylesheet"/>
@@ -156,9 +159,9 @@
 <body unresolved>
 	<iron-iconset icons="device action navigation maps image editor" size="24"></iron-iconset>
 	<div class="layout vertical">
-		<div class="layout horizontal">
+		<div class="layout horizontal" style="background-color: green;">
 			<h1>Открытые данные</h1>
-			<div>Лого</div>
+			<div><img src="images/white-logo-01.png"></div>
 		</div>
 		<div class="layout vertical">
 			<leaflet-map latitude="55.753" longitude="37.629" zoom="13" maxZoom="18" id="map" noAttributionControl="true" class="layout flex" noZoomControl="true">
