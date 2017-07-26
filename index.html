@@ -62,6 +62,10 @@
 	<!--<link rel="import" href="/webjars/web-animations-js/web-animations-js.html">-->
 
 	<link rel="import" href="/webjars/iron-flex-layout/iron-flex-layout-classes.html">
+	<!-- include classes in the main document -->
+	<style is="custom-style" include="iron-flex iron-flex-alignment iron-positioning"></style>
+
+
 	<!--link rel="import" href="/webjars/platinum-sw/platinum-sw-elements.html"-->
 
 	<!--<link rel="import" href="/webjars/google-map/google-map-search.html">-->
@@ -83,18 +87,14 @@
 	<link rel="import" href="/webjars/geomarketing-map/geomarketing-map.html">
 	<!--link rel="import" href="/webjars/address-autocomplete/address-autocomplete.html">
 	<link rel="import" href="/webjars/login-form/login-form.html"-->
-
-
-	<!-- include classes in the main document -->
-	<style is="custom-style" include="iron-flex iron-flex-alignment iron-positioning">
-
-    <style>
+	<style>
 	html, body {
 		width: 100%;
 		height: 100%;
 		margin: 0;
 		padding: 0;
 		font-family: Arial;
+		text-color: #656989;
 	}
         leaflet-map {
 /*		position: absolute;
@@ -104,6 +104,14 @@
 		width: 100%;
 		height: 800px;
         }
+
+	.top {
+		background: linear-gradient(90deg, #1BAC9B, #66A850)
+	}
+
+	.bottom {
+		background-color: #656989;
+	}
 
         label {
             font-family: Arial;
@@ -151,19 +159,28 @@
         .place-icon {
             color: red;
         }
-    </style>
+	</style>
 	<link href="/css/main.css" rel="stylesheet"/>
 	<script src="/js/leaflet-providers.js"></script>
 	<script src="/js/leaflet.awesome-markers.min.js"></script>
+	<script>
+		var loadGeoJson= function(id) {
+			$.getJSON("https://nominatim.openstreetmap.org/reverse", {'format': 'json', "osm_id": '60189', 'polygon_geojson': 1, "osm_type": "R"}).then(function(json) { 
+				console.log(json.geojson); 
+				L.geojson(json.geojson, {}).addTo($("#map")[0].map)
+			});
+		}
+	</script>
 </head>
 <body unresolved>
 	<iron-iconset icons="device action navigation maps image editor" size="24"></iron-iconset>
 	<div class="layout vertical">
-		<div class="layout horizontal" style="background-color: green;">
-			<h1>Открытые данные</h1>
+		<div class="layout horizontal top">
+			<div>Открытые данные</div>
+			<div class="flex"></div>
 			<div><img src="images/white-logo-01.png"></div>
 		</div>
-		<div class="layout vertical">
+		<div class="layout horizontal">
 			<leaflet-map latitude="55.753" longitude="37.629" zoom="13" maxZoom="18" id="map" noAttributionControl="true" class="layout flex" noZoomControl="true">
 				<!--<leaflet-layers-control id="layers-control" position="bottomright"></leaflet-layers-control>-->
 
@@ -177,8 +194,9 @@
 			</leaflet-map>
 
 			<!--geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map-->
+			<div class="flex">график, кнопка и пояснения</div>
 		</div>
-		<div class="layout horizontal">
+		<div class="layout horizontal bottom">
 			<span>Показатель</span>
 			<span>Регион</span>
 			<span>Период</span>
