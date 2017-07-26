@@ -83,10 +83,13 @@
 	<link rel="import" href="/webjars/places-search/places-search.html">
 	<link rel="import" href="/webjars/cian-search/cian-search.html"-->
 
-	<!--link rel="import" href="/webjars/dadata-ajax/dadata-address.html"-->
-	<link rel="import" href="/webjars/geomarketing-map/geomarketing-map.html">
+	<!--link rel="import" href="/webjars/dadata-ajax/dadata-address.html">
+	<link rel="import" href="/webjars/geomarketing-map/geomarketing-map.html"-->
 	<!--link rel="import" href="/webjars/address-autocomplete/address-autocomplete.html">
 	<link rel="import" href="/webjars/login-form/login-form.html"-->
+
+	<link rel="import" href="./my-controls.html">
+
 	<style>
 	html, body {
 		width: 100%;
@@ -114,15 +117,17 @@
 	.bottom {
 		background-color: #656989;
 		height: 100px;
+		color: white;
 	}
 
 	.right {
 		background-color: #66A850;
-		width: 30%;
+		width: 20%;
 	}
 
 	.chart {
 		background: linear-gradient(0deg, #1BAC9B, #66A850);
+		width: 30%;
 	}
 
         label {
@@ -187,6 +192,7 @@
        					.key(function(d) { return d['Регион']; })
        					.map(deposits)
        				;
+				$("#controls")[0].set("regions", ['Россия'])ж
 
        				var data= deposits
        				.filter(function(d) { return d['Регион']!='Россия';})
@@ -232,7 +238,7 @@
 	<iron-iconset icons="device action navigation maps image editor" size="24"></iron-iconset>
 	<div class="layout vertical">
 		<div class="layout horizontal top">
-			<div>Открытые данные</div>
+			<div><h2>Открытые данные</h2></div>
 			<div class="flex"></div>
 			<div><img src="images/white-logo-01.png"></div>
 		</div>
@@ -256,6 +262,8 @@
 				<div id="explain">пояснения</div>
 			</div>
 		</div>
+		<my-controls id="controls"></my-controls>
+<!--
 		<div class="layout horizontal bottom">
 			<div id="params">
 				<paper-dropdown-menu label="Показатель">
@@ -271,6 +279,7 @@
 				<paper-dropdown-menu label="Регион">
 					<paper-listbox class="dropdown-content">
 						<template is="dom-repeat" items="[ 'Россия' ]">
+							<paper-item value="{{item.code}}" data-code="60189">Россия</paper-item>
 							<paper-item value="{{item.code}}" data-code="{{item.code}}">{{item.text}}</paper-item>
 						</template>
 					</paper-listbox>
@@ -278,6 +287,7 @@
 			</div>
 			<div>Период</div>
 		</div>
+-->
 	</div>
 </body>
 </html>

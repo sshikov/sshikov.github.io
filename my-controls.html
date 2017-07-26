@@ -1,0 +1,43 @@
+<dom-module id="my-controls">
+    <template>
+
+		<div class="layout horizontal bottom">
+			<div id="params">
+				<paper-dropdown-menu label="Показатель">
+					<paper-listbox class="dropdown-content">
+						<template is="dom-repeat" items="[ 'Средняя сумма заявки на потребительский кредит' ]">
+							<paper-item value="{{item.code}}" data-code="{{item.code}}">{{item.text}}</paper-item>
+						</template>
+					</paper-listbox>
+				</paper-dropdown-menu>
+
+			</div>
+			<div id="regions">
+				<paper-dropdown-menu label="Регион">
+					<paper-listbox class="dropdown-content">
+						<template is="dom-repeat" items="[ 'Россия' ]">
+							<paper-item value="{{item.code}}" data-code="60189">Россия</paper-item>
+							<paper-item value="{{item.code}}" data-code="{{item.code}}">{{item.text}}</paper-item>
+						</template>
+					</paper-listbox>
+				</paper-dropdown-menu>
+			</div>
+			<div>Период</div>
+		</div>
+    </template>
+    <script>
+	Polymer({
+		is: 'my-controls'
+		, properties: {
+			regions: {
+				type: Array
+				value: null
+			}
+			, parameters: {
+				type: Array
+				value: null
+			}
+		}
+	});
+    </script>
+</dom-module>
