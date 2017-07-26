@@ -108,6 +108,7 @@
 	.top {
 		background: linear-gradient(90deg, #1BAC9B, #66A850);
 		height: 100px;
+		color: white;
 	}
 
 	.bottom {
@@ -116,7 +117,7 @@
 	}
 
 	.right {
-		width: 
+		width: 30%;
 	}
 
         label {
@@ -183,6 +184,10 @@
 		});
 
 		$("#map").on("map-ready", function(e) {
+			var map= $("#map")[0].map;
+			L.tileLayer.grayscale('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20 })
+				.addTo(map)
+			;
 			loadGeoJson(80169);
 		});
 	</script>
