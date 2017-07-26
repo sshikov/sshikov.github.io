@@ -168,7 +168,19 @@
 			<span>Лого</span>
 		</div>
 		<div class="layout vertical">
-			<geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map>
+			<leaflet-map latitude="55.753" longitude="37.629" zoom="13" maxZoom="18" id="map" noAttributionControl="true" class="layout flex" noZoomControl="true">
+				<!--<leaflet-layers-control id="layers-control" position="bottomright"></leaflet-layers-control>-->
+
+				<!--todo <leaflet-geojson></leaflet-geojson>-->
+
+				<leaflet-tilelayer id="osm" url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" max-zoom="19">
+					Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contr.,
+					<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,
+					Imagery © <a href="http://mapbox.com">Mapbox</a>
+				</leaflet-tilelayer>
+			</leaflet-map>
+
+			<!--geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map-->
 		</div>
 		<div class="layout horizontal">
 			<span>Показатель</span>
