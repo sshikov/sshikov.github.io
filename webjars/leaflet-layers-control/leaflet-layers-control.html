@@ -1,0 +1,71 @@
+<link rel="import" href="leaflet-core.html">
+<!--
+Layers control that shows the scale of the current center of screen in metric (m/km) and imperial (mi/ft) systems. (<a href="http://leafletjs.com/reference.html#control-scale">Leaflet Reference</a>).
+
+##### Example
+
+    <leaflet-layers-control> </leaflet-layers-control>
+	
+##### Example
+
+    <leaflet-layers-control baseLayers="{}" overlays="{}">
+    </leaflet-layers-control>
+
+@element leaflet-layers-control
+@blurb Layers control that shows the layers of the map
+@homepage https://leaflet-extras.github.io/leaflet-map/
+@demo https://leaflet-extras.github.io/leaflet-map/demo.html
+-->
+
+<dom-module id="leaflet-layers-control">
+	<style>
+		:host {display: none;}
+	</style>
+	<template>
+	</template>
+	<script>
+	"use strict";
+
+	Polymer({
+		is: 'leaflet-layers-control',
+		properties: {
+			/**
+			 * The `position` attribute sets the position of the control (one of the map corners). See control positions.
+			 * 
+			 * @attribute position
+			 * @type string
+			 */
+			position: {
+				type: String,
+				value: "bottomleft"
+			}
+			, baseLayers: {
+				type: Object
+				, value: {}
+			}
+			, overlays: {
+				type: Object
+				, value: {}
+			}
+			, container: {
+				type: Object,
+				observer: '_containerChanged'
+			}
+		}
+		, _containerChanged: function() {
+			if (this.container) {
+				var control = L.control.layers(
+					this.baselayers, this.overlays, {'collapsed': true, position: this.position }
+				);
+				this.control = control;
+				this.control.addTo(this.container);
+			}
+		}
+		, detached: function() {
+			if (this.container && this.control) {
+				this.container.removeControl(this.control);
+			}
+		}
+	});
+	</script>
+</dom-module>
