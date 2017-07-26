@@ -171,6 +171,31 @@
 	<script src="/js/leaflet-providers.js"></script>
 	<script src="/js/leaflet.awesome-markers.min.js"></script>
 	<script>
+       		var depositLoader= function() {
+       			var map= $("#map")[0];
+       			var regions= {};
+       			var df= d3.timeParse("%d.%m.%Y");
+       			d3.text('/data/deposits.csv', function(csv) {
+       				var dsv= d3.dsvFormat('|');
+       				var deposits= dsv.parse(csv);
+       				var data= deposits
+       				.filter(function(d) { return d['Регион']!='Россия';})
+       				.map(function(d) {
+       					var region= d['Регион'];
+       					var value= Number(d['Показатель']);
+       					var date= df(d['Дата']);
+       					if(!regions[region]) {
+       						regions[region]= {values: []};
+       					}
+       					regions[region].values.push({'date': date, 'value': value});
+       				});
+       				_.forEach(regions, function(region, key) {
+       					console.log(region, key);
+//       					map.drawCity(key, {values: region.values}, highlightRegion);
+       				})
+       			});
+       		};
+
 		var loadGeoJson= function(id) {
 			$.getJSON("https://nominatim.openstreetmap.org/reverse", {'format': 'json', "osm_id": id, 'polygon_geojson': 1, "osm_type": "R"}).then(function(json) { 
 				console.log(json.geojson); 
@@ -189,6 +214,7 @@
 				.addTo(map)
 			;
 			loadGeoJson(80169);
+			depositLoader();
 		});
 	</script>
 </head>
