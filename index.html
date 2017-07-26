@@ -260,7 +260,7 @@
 			<div id="params">
 				<paper-dropdown-menu label="Показатель">
 					<paper-listbox class="dropdown-content">
-						<template is="dom-repeat" items="{{params}}">
+						<template is="dom-repeat" items="[ 'Средняя сумма заявки на потребительский кредит' ]">
 							<paper-item value="{{item.code}}" data-code="{{item.code}}">{{item.text}}</paper-item>
 						</template>
 					</paper-listbox>
@@ -270,7 +270,7 @@
 			<div id="regions">
 				<paper-dropdown-menu label="Регион">
 					<paper-listbox class="dropdown-content">
-						<template is="dom-repeat" items="{{regions}}">
+						<template is="dom-repeat" items="[ 'Россия' ]">
 							<paper-item value="{{item.code}}" data-code="{{item.code}}">{{item.text}}</paper-item>
 						</template>
 					</paper-listbox>
