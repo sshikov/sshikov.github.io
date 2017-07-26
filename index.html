@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Геомаркетинг 2.0</title>
+	<script src="/webjars/lodash/lodash.min.js"></script>
+	<script src="/webjars/jquery/jquery.min.js"></script>
+	<script src="/static/js/globalVars.js"></script>
+
+	<link href="/webjars/material-design-icons/material-icons.css" rel="stylesheet"/>
+	<link href="/static/css/font-awesome.css" rel="stylesheet"/>
+	<link href="/static/css/leaflet.awesome-markers.css" rel="stylesheet"/>
+	<link href="/static/css/MarkerCluster.css" rel="stylesheet"/>
+	<link href="/static/css/MarkerCluster.Default.css" rel="stylesheet"/>
+
+	<!--<script src="components/webcomponentsjs/webcomponents-lite.js"></script>-->
+	<script>
+    /* this script must run before Polymer is imported
+    window.Polymer = {
+        dom: 'shadow',
+        lazyRegister: true
+    };
+    */
+    </script>
+	<link rel="import" href="/webjars/polymer/polymer.html">
+
+	<!--<link rel="import" href="../iron-component-page/iron-component-page.html">-->
+	<link rel="import" href="/webjars/iron-icon/iron-icon.html">
+	<!--<link rel="import" href="/webjars/iron-ajax/iron-ajax.html">-->
+	<link rel="import" href="/webjars/iron-icons/maps-icons.html">
+	<link rel="import" href="/webjars/iron-icon/iron-icon.html">
+	<link rel="import" href="/webjars/iron-icons/iron-icons.html">
+	<link rel="import" href="/webjars/iron-iconset/iron-iconset.html">
+	<link rel="import" href="/webjars/iron-input/iron-input.html">
+	<link rel="import" href="/webjars/iron-selector/iron-selector.html">
+	<link rel="import" href="/webjars/iron-pages/iron-pages.html">
+	<link rel="import" href="/webjars/paper-tabs/paper-tabs.html">
+	<link rel="import" href="/webjars/paper-item/paper-item.html">
+	<link rel="import" href="/webjars/paper-item/paper-icon-item.html">
+	<link rel="import" href="/webjars/paper-input/paper-input.html">
+	<link rel="import" href="/webjars/paper-button/paper-button.html">
+	<link rel="import" href="/webjars/paper-listbox/paper-listbox.html">
+	<link rel="import" href="/webjars/paper-icon-button/paper-icon-button.html">
+
+	<link rel="import" href="/webjars/paper-interval-slider/paper-interval-slider.html">
+	<!--<link rel="import" href="bower_components/paper-card/paper-card.html">-->
+	<link rel="import" href="/webjars/paper-dropdown-menu/paper-dropdown-menu.html">
+	<link rel="import" href="/webjars/paper-dialog/paper-dialog.html">
+	<link rel="import" href="/webjars/paper-menu-button/paper-menu-button.html">
+	<link rel="import" href="/webjars/paper-drawer-panel/paper-drawer-panel.html">
+	<link rel="import" href="/webjars/paper-drawer-panel/paper-header-panel.html">
+	<!--<link rel="import" href="/webjars/paper-drawer-panel/paper-toolbar.html">-->
+	<!--<link rel="import" href="/webjars/paper-autocomplete/paper-autocomplete.html">-->
+	<!--<link rel="import" href="/webjars/paper-autocomplete/paper-autocomplete-suggestions.html">-->
+
+	<!--<link rel="import" href="/webjars/neon-animation/animations/fade-in-animation.html">-->
+	<!--<link rel="import" href="/webjars/neon-animation/animations/fade-out-animation.html">-->
+	<!--<link rel="import" href="/webjars/neon-animation/animations/opaque-animation.html">-->
+	<!--<link rel="import" href="/webjars/web-animations-js/web-animations-js.html">-->
+
+	<!--<link rel="import" href="/webjars/google-map/google-map-search.html">-->
+	<!--<link rel="import" href="/webjars/google-signin/google-signin.html">-->
+
+	<link rel="import" href="/webjars/leaflet-map/leaflet-map.html">
+	<link rel="import" href="/webjars/geo-codec/geo-codec.html">
+
+	<link rel="import" href="/webjars/yandex-geocode/yandex-geocode.html">
+	<link rel="import" href="/webjars/arcgis-geocode/arcgis-geocode.html">
+	<link rel="import" href="/webjars/geomarketing-geocode/geomarketing-geocode.html">
+	<link rel="import" href="/webjars/geomarketing-data/geomarketing-data.html">
+	<link rel="import" href="/webjars/geomarketing-settings/geomarketing-settings.html">
+	<link rel="import" href="/webjars/geomarketing-cities/geomarketing-cities.html">
+	<link rel="import" href="/webjars/places-search/places-search.html">
+	<link rel="import" href="/webjars/cian-search/cian-search.html">
+
+	<link rel="import" href="/webjars/dadata-ajax/dadata-address.html">
+	<link rel="import" href="/webjars/geomarketing-map/geomarketing-map.html">
+	<link rel="import" href="/webjars/address-autocomplete/address-autocomplete.html">
+	<link rel="import" href="/webjars/login-form/login-form.html">
+
+	<link rel="import" href="/webjars/iron-flex-layout/iron-flex-layout-classes.html">
+
+	<link rel="import" href="/webjars/platinum-sw/platinum-sw-elements.html">
+
+	<!-- include classes in the main document -->
+	<style is="custom-style" include="iron-flex iron-flex-alignment iron-positioning">
+
+    <style>
+		html, body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+            font-family: Arial;
+		}
+/*
+        leaflet-map {
+			position: absolute;
+			bottom: 0;
+			top: 0;
+			width: 100%;
+        }
+*/
+//	height: 600px;
+
+		body span.due {
+			display: none;
+		}
+		body.due span.due {
+			display: inline;
+		}
+        label {
+            font-family: Arial;
+        }
+        paper-checkbox {
+			font-family: Arial;
+        }
+        iron-selector {
+			font-family: Arial;
+        }
+
+        paper-dialog {
+            z-index: 999 !important;
+        }
+
+        paper-item .iron-selected {
+            color: lightblue;
+			font-weight: normal;
+        }
+        paper-item[focused] {
+            color: lightblue;
+        }
+        paper-icon-item[focused] {
+            color: lightblue;
+        }
+        paper-icon-item[focused] iron-icon {
+            color: blue;
+        }
+        paper-item[focused] {
+            color: lightblue;
+        }
+
+        paper-checkbox {
+            background-color: white;
+        }
+        paper-checkbox[checked] {
+            background-color: white;
+            color: blue;
+        }
+
+        .point-icon {
+            color: orange;
+        }
+
+        .place-icon {
+            color: red;
+        }
+    </style>
+	<link href="/static/css/main.css" rel="stylesheet"/>
+	<script src="/static/js/leaflet-providers.js"></script>
+	<script src="/static/js/leaflet.awesome-markers.min.js"></script>
+	<script>
+		function toggleDrawer() {
+			$('#paperDrawerPanel')[0].togglePanel();
+		}
+	</script>
+</head>
+<body unresolved>
+<iron-iconset icons="device action navigation maps image editor" size="24"></iron-iconset>
+<!--
+<iron-a11y-keys id="a11y" target="[[_form]]" keys="enter"
+                  on-keys-pressed="submitForm"></iron-a11y-keys>
+  <form is="iron-form" id="form"
+        method="post"
+        action="{{url}}">
+-->
+<platinum-sw-register skip-waiting clients-claim auto-register reload-on-install>
+	<!--
+				<platinum-sw-import-script href="weather-fetch-handler.js"></platinum-sw-import-script>
+				<platinum-sw-fetch handler="weatherFetchHandler"
+								   path="/v1/public/yql"
+								   origin="https://query.yahooapis.com">
+				</platinum-sw-fetch>
+	-->
+	<platinum-sw-cache default-cache-strategy="fastest"></platinum-sw-cache>
+</platinum-sw-register>
+<paper-drawer-panel id="paperDrawerPanel" responsiveWidth="1024"><!--force-narrow -->
+	<paper-header-panel drawer id="drawer">
+		<!--<paper-toolbar>-->
+		<div class="paper-header">Menu
+			<paper-button onclick="toggleDrawer()" raised>close drawer</paper-button>
+		</div>
+		<!--</paper-toolbar>-->
+		<div>
+			<geomarketing-data id="data"></geomarketing-data>
+			<div class="layout vertical">
+				<places-search id="places-search"></places-search>
+				<cian-search id="cian-search"></cian-search>
+
+				<form action="/address" method="get" class="layout vertical" onsubmit="return false;">
+					<div class="layout horizontal">
+						<geomarketing-cities id="cities"></geomarketing-cities>
+						<span class="layout flex"></span>
+						<iron-icon icon="chevron-left" id="drawer-close"></iron-icon>
+					</div>
+				</form>
+				<div style="text-align: left">
+					<template is="dom-bind" id="layers-scope">
+						<!--<iron-iconset name="layers" icons="maps image" size="16" width="16"></iron-iconset>-->
+						<paper-listbox id="multi-layers" multi selected-values="{{selectedLayers}}" label="Слои">
+							<paper-item value="ATMPOS" color="red"><iron-icon icon="maps:local-atm" item-icon style="fill:blue"></iron-icon>ATM/POS</paper-item>
+							<paper-item value="VSP" color="green"><iron-icon icon="maps:local-atm" item-icon style="fill:green"></iron-icon>ВСП</paper-item>
+							<paper-item value="MARKETRENT" color="blue"><iron-icon icon="home" item-icon style="fill:blue"></iron-icon>ЦИАН недвижимость</paper-item>
+							<paper-item value="RENT" color="darkred"><iron-icon icon="home" item-icon style="fill:red"></iron-icon>АСУН</paper-item>
+							<paper-item value="DUE" color="orange"><iron-icon icon="maps:local-atm" item-icon style="fill:orange"></iron-icon>Кредиты</paper-item>
+							<paper-item value="OVERDUE" color="cadetblue"><iron-icon icon="maps:local-atm" item-icon style="fill:cadetblue"></iron-icon>Просроченные кредиты</paper-item>
+							<paper-item value="GRID" color="darkgreen"><iron-icon icon="image:grid-on" item-icon style="fill:darkgreen"></iron-icon>Сетка</paper-item>
+						</paper-listbox>
+					</template>
+				</div>
+				<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D" width="0" height="0" id="closest-place">
+				<geomarketing-settings id="settings-form" style="display: none;"></geomarketing-settings>
+
+				<template is="dom-bind">
+					<geomarketing-geocode id="geomarketing-geocode" street="{{geocode}}"></geomarketing-geocode>
+					<div>
+						<template is="dom-repeat" items="{{addresses}}">
+							<paper-item>{{item}}</paper-item>
+						</template>
+					</div>
+				</template>
+			</div>
+		</div>
+	</paper-header-panel>
+	<paper-header-panel main>
+		<!--<paper-toolbar>-->
+		<div class="paper-header"><paper-button onclick="toggleDrawer()" raised>flip drawer</paper-button></div>
+		<!--</paper-toolbar>-->
+		<div class="layout vertical">
+			<paper-button raised paper-drawer-togle>toggle drawer</paper-button>
+			<geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map>
+		</div>
+	</paper-header-panel>
+</paper-drawer-panel>
+</body>
+</html>
