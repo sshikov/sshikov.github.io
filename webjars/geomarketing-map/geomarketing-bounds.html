@@ -1,0 +1,53 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="geomarketing-bounds">
+	<template>
+	</template>
+	<script>
+		Polymer({
+			is: 'geomarketing-bounds'
+			, properties: {
+				url: {
+					type: String
+					value: "https://nominatim.openstreetmap.org/search"
+				}
+			}
+			, ready: function() {
+			}
+			, drawCity: function(regionName) {
+				var jsondata = $.getJSON(
+					this.url
+					, {
+						q: regionName,
+						format: "json",
+						polygon_geojson: 1
+					}
+				).then(function(data) {
+					L.geoJson({
+						"type":"Feature"
+						, "id": globals.currentCity+"_bounds"
+						, "geometry": data[0].geojson
+						, "properties":{"name":"bounds"}
+					}).addTo(globals.map.map);
+				});
+			}
+			, drawRect: function(bounds) {
+				L.geoJson({
+					"type":"Feature"
+					, "id": globals.currentCity+"_bounds"
+					, "geometry": {
+						"type":"Polygon",
+						"coordinates":[[
+							[bounds.getSouthWest().lng,bounds.getSouthWest().lat]
+							,[bounds.getNorthWest().lng,bounds.getNorthWest().lat]
+							,[bounds.getNorthEast().lng,bounds.getNorthEast().lat]
+							,[bounds.getSouthEast().lng,bounds.getSouthEast().lat]
+							,[bounds.getSouthWest().lng,bounds.getSouthWest().lat]
+						]]
+					}
+					, "properties":{"name":"bounds"}
+				}).addTo(globals.map.map);
+			}
+		});
+	</script>
+</dom-module>

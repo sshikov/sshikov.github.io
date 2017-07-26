@@ -1,0 +1,168 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-iconset/iron-iconset.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-menu/paper-submenu.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-icon-item/paper-icon-item.html">
+<link rel="import" href="../geomarketing-cities/geomarketing-cities.html">
+
+<dom-module id="geomarketing-sidebar">
+	<template>
+	<div id="sidebar" class="sidebar collapsed">
+		<!-- Nav tabs -->
+		<div class="sidebar-tabs">
+			<ul role="tablist">
+				<li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+				<li><a href="#profile" role="tab"><iron-icon icon="account-box"></iron-icon></a></li>
+				<li><a href="#layers" role="tab"><iron-icon icon="maps:layers"></iron-icon></a></li>
+				<li><a href="#search" role="tab"><i class="fa fa-search"></i></a></li>
+				<li><a href="#locate" role="tab"><paper-icon-button title="Мое положение" id="whereami" icon="maps:my-location" noink></paper-icon-button></a></li>
+				<li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+			</ul>
+
+			<ul role="tablist">
+				<li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+			</ul>
+		</div>
+
+		<!-- Tab panes -->
+		<div class="sidebar-content">
+			<div class="sidebar-pane" id="home">
+				<h1 class="sidebar-header">
+					Геомаркетинг 2.0
+					<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+				</h1>
+				<paper-icon-item>
+					<iron-icon icon="search" item-icon></iron-icon>
+					<geomarketing-cities id="cities"></geomarketing-cities>
+				</paper-icon-item>
+				<!--h1 class="sidebar-header">Поиск по адресу<iron-icon class="sidebar-close"><iron-icon icon="ыуфкср" item-icon style="fill:blue"></iron-icon></h1-->
+				<paper-icon-item>
+					<iron-icon icon="search" item-icon></iron-icon>
+					<paper-input id="search-data" label="Поиск по адресу" icon="search" style="width: 600px;"></paper-input>
+				</paper-icon-item>
+			</div>
+
+			<div class="sidebar-pane" id="layers">
+				<h1 class="sidebar-header">Данные для показа<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+				<paper-listbox id="multi-layers" multi selected-values="{{selectedLayers}}" label="Слои">
+					<paper-item value="ATMPOS" color="red"><iron-icon icon="maps:local-atm" item-icon style="fill:blue"></iron-icon>ATM/POS</paper-item>
+					<paper-item value="VSP" color="green"><iron-icon icon="maps:local-atm" item-icon style="fill:green"></iron-icon>ВСП</paper-item>
+					<paper-item value="MARKETRENT" color="orange"><iron-icon icon="home" item-icon style="fill:orange"></iron-icon>ЦИАН недвижимость</paper-item>
+					<paper-item value="RENT" color="darkred"><iron-icon icon="home" item-icon style="fill:darkred"></iron-icon>АСУН</paper-item>
+					<paper-item value="DUE" color="orange"><iron-icon icon="maps:local-atm" item-icon style="fill:orange"></iron-icon>Кредиты</paper-item>
+					<paper-item value="OVERDUE" color="cadetblue"><iron-icon icon="maps:local-atm" item-icon style="fill:cadetblue"></iron-icon>Просроченные кредиты</paper-item>
+					<paper-item value="GRID" color="darkgreen"><iron-icon icon="image:grid-on" item-icon style="fill:darkgreen"></iron-icon>Сетка</paper-item>
+				</paper-listbox>
+				<h1 class="sidebar-header">Слои<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+				<paper-menu>
+					<paper-submenu>
+						<paper-item class="menu-trigger"><i class="fa fa-google" aria-hidden="true"></i>Gogle</paper-item>
+						<paper-menu class="menu-content">
+							<paper-item>Улицы</paper-item>
+							<paper-item>Спутник</paper-item>
+							<paper-item>Рельеф</paper-item>
+						</paper-menu>
+					</paper-submenu>
+					<paper-submenu>
+						<paper-item class="menu-trigger"><iron-icon src="/static/images/yandex.png" item-icon style="fill:blue"></iron-icon>Yandex</paper-item>
+						<paper-menu class="menu-content">
+							<paper-item>Улицы</paper-item>
+							<paper-item>Спутник</paper-item>
+							<paper-item>Гибрид</paper-item>
+						</paper-menu>
+					</paper-submenu>
+					<paper-submenu>
+						<paper-item class="menu-trigger"><iron-icon src="/static/images/icons8-OSM-48.png" item-icon style="fill:blue"></iron-icon>Разное</paper-item>
+						<paper-menu class="menu-content">
+							<paper-item>OpenStreetMap</paper-item>
+							<paper-item>Grayscale</paper-item>
+						</paper-menu>
+					</paper-submenu>
+					<paper-submenu>
+						<paper-item class="menu-trigger"><iron-icon icon="maps:local-atm" item-icon style="fill:blue"></iron-icon>ArcGIS</paper-item>
+						<paper-menu class="menu-content">
+							<paper-item>Улицы</paper-item>
+							<paper-item>Спутник</paper-item>
+						</paper-menu>
+					</paper-submenu>
+				</paper-menu>
+			</div>
+
+			<div class="sidebar-pane" id="profile">
+				<h1 class="sidebar-header">Вход/регистрация<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+				<template is="dom-bind" id="login-scope">
+					<h2>Вход</h2>
+					<paper-icon-item>
+						<iron-icon icon="account-box" item-icon></iron-icon>
+						<paper-input id="email" label="e-mail" value="{{email}}"></paper-input>
+					</paper-icon-item>
+					<paper-icon-item>
+						<iron-icon icon="search" item-icon></iron-icon>
+						<paper-input id="password" label="password" type="password" value="{{password}}"></paper-input>
+					</paper-icon-item>
+					<div class="buttons">
+						<paper-button dialog-dismiss>Cancel</paper-button>
+						<paper-button dialog-confirm autofocus>Accept</paper-button>
+					</div>
+				</template>
+			</div>
+
+			<div class="sidebar-pane" id="locate">
+				<h1 class="sidebar-header">Геолокация<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+				<div class="layout vertical" style="position: absolute; bottom: 0; display: none;">
+					<span>{{scaleText}}</span>
+					<span id="gridScale">{{gridScale}}</span>
+					<span id="gridScaleLabel">{{gridScaleLabel}}</span>
+					<span><i class="material-icons">gps_fixed</i></span>
+					<span id="location">{{locationText}}</span>
+				</div>
+			</div>
+
+			<div class="sidebar-pane" id="messages">
+				<h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+			</div>
+
+			<div class="sidebar-pane" id="settings">
+				<style>
+							input {
+								width: 40px;
+							}
+							.settings label {
+								width: 80%;
+								display: flex;
+								justify-content: space-between;
+							}
+						</style>
+				<h1 class="sidebar-header">Настройки<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+				<div class="settings layout vertical">
+					<label>Ветка выдачи: <input type="number" max="1" step="0.1" value="{{atmCashOutWeight}}"></label><br>
+					<label>Ветка внесения: <input type="number" max="1" step="0.1" value="{{atmCashInWeight}}"></label><br>
+					<label>Выдача (кол-во): <input type="number" max="1" step="0.1" value="{{atmCashOutCountWeight}}"></label><br>
+					<label>Выдача (сумма): <input type="number" max="1" step="0.1" value="{{atmCashOutAmountWeight}}"></label><br>
+					<label>Внесение (кол-во): <input type="number" max="1" step="0.1" value="{{atmCashInCountWeight}}"></label><br>
+					<label>Внесение (сумма): <input type="number" max="1" step="0.1" value="{{atmCashInAmountWeight}}"></label><br>
+					<label>POS (кол-во операций): <input type="number" max="1" step="0.1" value="{{posTransCountWeight}}"></label><br>
+					<label>POS (средний чек): <input type="number" max="1" step="0.1" value="{{posTransAvgWeight}}"></label><br>
+					<label>ВСП (талоны СУО): <input type="number" max="1" step="0.1" value="{{vspWeight}}"></label><br>
+					<label>Зарплата: <input type="number" max="1" step="0.1" value="{{salaryWeight}}"></label><br>
+					<label>Баланс: <input type="number" max="1" step="0.1" value="{{balanceWeight}}"></label>
+					<label>Коэффициент Вымпелком: <input type="number" max="1" step="0.1" value="{{beelineC}}"></label>
+					<label>Коэффициент Сбербанк: <input type="number" max="1" step="0.1" value="{{sberbankC}}"></label>
+				</div>
+				<geomarketing-settings id="settings-form"></geomarketing-settings>
+			</div>
+		</div>
+	</div>
+	</template>
+	<script>
+        Polymer({
+            is: 'geomarketing-sidebar'
+            , properties: {
+			}
+		});
+	</script>
+</dom-module>

@@ -1,0 +1,1278 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="/webjars/leaflet-map/leaflet-map.html">
+
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icons/editor-icons.html">
+<link rel="import" href="../iron-iconset/iron-iconset.html">
+<!--<link rel="import" href="../iron-iconset/iron-iconset-svg.html">-->
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-menu/paper-submenu.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-slider/paper-slider.html">
+<link rel="import" href="../paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../paper-interval-slider/paper-interval-slider.html">
+
+<link rel="import" href="/webjars/leaflet-layers-control/leaflet-layers-control.html">
+<link rel="import" href="./geomarketing-layers.html">
+<link rel="import" href="./geomarketing-layers-tree.html">
+<link rel="import" href="./geomarketing-baselayers.html">
+<link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html">
+
+<link rel="import" href="/webjars/google-chart/google-chart.html">
+
+<link rel="import" href="/webjars/login-form/login-form.html">
+
+<!--<link rel="import" href="/webjars/iron-a11y-keys/iron-a11y-keys.html">-->
+<link rel="import" href="/webjars/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"/>
+
+<script src="/static/js/Tilelayer.Grayscale.js"></script>
+<script src="/static/js/leaflet-tilelayer-here.js"></script>
+<script src="http://api-maps.yandex.ru/2.0/?load=package.map&lang=ru-RU" type="text/javascript"></script>
+<script src="/static/js/Yandex.js"></script>
+<script src="/static/js/Google.js"></script>
+<script src="/static/js/Layer.Deferred.js"></script>
+<!--<script src="/static/js/Bing.js"></script>-->
+
+<script src="/static/js/Leaflet.Control.Custom.js"></script>
+<!--<script src="/static/js/Leaflet.LayerGroup.Collision.js"></script>-->
+<!--<script src="https://unpkg.com/rbush@2.0.1/rbush.js"></script>-->
+<script src="/static/js/leaflet.conditionalLayer.js"></script><!--работает-->
+<script src="/static/js/leaflet.markercluster-src.js"></script>
+<script src="/static/js/Leaflet.Photo.js"></script>
+<script src="/static/js/leaflet-sidebar.js"></script>
+<script src="http://sashakavun.github.io/leaflet-canvasicon/leaflet-canvasicon.js"></script>
+<script src="/static/js/leaflet-piechart.js"></script>
+
+<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/css/Leaflet.Photo.css">
+<link rel="stylesheet" href="/static/css/leaflet-sidebar.css" />
+
+<!--<link rel="stylesheet" href="https://unpkg.com/leaflet.pm@0.17.1/dist/leaflet.pm.css" />-->
+
+<script src="/static/js/leaflet-tilelayer-here.js"></script>
+<script src="/static/js/heatmap.js"></script>
+<script src="/static/js/leaflet-heatmap.js"></script>
+<!--<script src="/static/js/leaflet-layerindex.js"></script>-->
+<script src="/static/js/subgroup.js"></script>
+
+<script src="./js/heatmapHelper.js"></script>
+<script src="./js/gridHelper.js"></script>
+<script src="./js/vspRegionHandlers.js"></script>
+<script src="./js/overpassHelper.js"></script>
+<script src="./js/drawHelper.js"></script>
+
+<script src="/static/js/osmtogeojson.js"></script>
+
+<!--<script src="https://unpkg.com/leaflet.pm@0.17.1/dist/leaflet.pm.min.js"></script>-->
+
+<!--<script src="./js/mapInfoControl.js"></script>-->
+
+<dom-module id="geomarketing-map">
+    <iron-iconset icons="device action navigation maps editor" size="24"></iron-iconset>
+	<!--<iron-iconset-svg name="editor" size="24">-->
+    <template>
+		<div class="layout vertical" id="container">
+			<leaflet-map latitude="55.753" longitude="37.629" zoom="13" maxZoom="18" id="map" noAttributionControl="true" class="layout flex" noZoomControl="true">
+				<!--<leaflet-draw></leaflet-draw>-->
+				<!--fit-to-markers-->
+				<!--<leaflet-geo-control position="topright"></leaflet-geo-control>-->
+
+				<!--<leaflet-layers-control id="layers-control" position="bottomright"></leaflet-layers-control>-->
+
+				<!--todo <leaflet-geojson></leaflet-geojson>-->
+
+	<!--
+				<leaflet-tilelayer id="osm" url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" max-zoom="19">
+					Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contr.,
+					<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,
+					Imagery © <a href="http://mapbox.com">Mapbox</a>
+				</leaflet-tilelayer>
+	-->
+	<!--
+				<leaflet-tilelayer url="http://{s}.base.maps.cit.api.here.com/maptile/2.1/{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}" max-zoom="19"
+					attribution="Map &copy; 1987-2014 <a href='http://developer.here.com'>HERE</a>"
+					subdomains="1234" mapID="newest" type="maptile" language="eng" format="png8"
+					app_id="snbEEm89spRF23PUlef3" app_code="z_RbdagZlSf8NyZqlNsf6A"
+					base="base"
+				>
+					Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>
+				</leaflet-tilelayer>
+	-->
+			</leaflet-map>
+<!--
+			<div class="layout horizontal" style="position: absolute; bottom: 0; display: none;">
+				<span>{{scaleText}}</span>&nbsp;<span id="gridScale">{{gridScale}}</span>&nbsp;<span id="gridScaleLabel">{{gridScaleLabel}}</span>
+				<span><i class="material-icons">gps_fixed</i></span><span id="location">{{locationText}}</span>
+			</div>
+-->
+		</div>
+		<div id="sidebar" class="sidebar collapsed">
+			<div class="sidebar-tabs">
+				<ul role="tablist">
+					<li class$="[[showLayers]]"><a href="#home" role="tab" title="Меню"><iron-icon icon="menu"></iron-icon></a></li>
+					<li><a href="#profile" role="tab" title="Вход"><iron-icon icon="account-box"></iron-icon></a></li>
+					<li class$="[[showLayers]]"><a href="#layers" role="tab" title="Слои"><iron-icon icon="maps:layers"></iron-icon></a></li>
+					<li id="li-business" class$="[[showLayers]]"><a href="#business" role="tab" title="Транзакции"><iron-icon icon="maps:local-atm"></iron-icon></a></li>
+					<li class$="[[showLayers]]"><a href="#search" role="tab" title="Поиск"><iron-icon icon="search"></iron-icon></a></li>
+					<!--<li><a href="#charts" role="tab" title="Диаграммы"><iron-icon icon="editor:pie-chart"></iron-icon></a></li>-->
+					<li><a title="Мое положение"><paper-icon-button on-click="handleLocate" title="Мое положение" id="whereami" icon="maps:my-location" noink></paper-icon-button></a></li>
+					<li><a title="Увеличить"><paper-icon-button on-click="handleZoomIn" title="Увеличить" id="zoom-in" icon="zoom-in" noink></paper-icon-button></a></li>
+					<li><a title="Уменьшить"><paper-icon-button on-click="handleZoomOut" title="Уменьшить" id="zoom-out" icon="zoom-out" noink></paper-icon-button></a></li>
+					<li><a title="АТД" href="#atd" role="tab"><iron-icon icon="maps:layers"></iron-icon></a></li>
+					<!--<li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>-->
+				</ul>
+
+				<ul role="tablist">
+					<!--todo config, role-->
+					<li id="li-settings" class$="[[showSettings]]"><a href="#settings" role="tab"><iron-icon icon="settings"></iron-icon></a></li>
+				</ul>
+			</div>
+
+			<!-- Tab panes -->
+			<div class="sidebar-content">
+				<div class="sidebar-pane" id="home">
+					<h1 class="sidebar-header">
+						Геомаркетинг 2.0
+						<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+					</h1>
+					<paper-icon-item>
+						<iron-icon icon="search" item-icon></iron-icon>
+						<geomarketing-cities id="cities"></geomarketing-cities>
+					</paper-icon-item>
+<!--
+					<paper-icon-item>
+						<iron-icon icon="search" item-icon></iron-icon>
+						<paper-input id="search-data" label="Поиск по адресу" icon="search" style="width: 600px;"></paper-input>
+					</paper-icon-item>
+-->
+				</div>
+
+				<div class="sidebar-pane" id="business">
+					<!--<template is="dom-if" if="{{isAdmin}}">-->
+						<h1 class="sidebar-header">Транзакции<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+						<geomarketing-layers id="multi-layers"></geomarketing-layers>
+						<geomarketing-layers-tree id="multi-layers-tree"></geomarketing-layers-tree>
+					<!--</template>-->
+				</div>
+
+				<div class="sidebar-pane" id="layers">
+					<h1 class="sidebar-header">Слои<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+					<geomarketing-baselayers id="base-layers"></geomarketing-baselayers>
+					<h2>Сетка/Heatmap</h2>
+					<!--todo on-change-->
+					<paper-radio-group label="Видимость" id="visibility" selected="{{visibleSelected}}" allow-empty-selection>
+						<paper-radio-button name="grid">Сетка</paper-radio-button><br>
+						<paper-radio-button name="heatmap">Heatmap (АСУН)</paper-radio-button><br>
+						<paper-radio-button name="heatmapRent">Heatmap (аренда)</paper-radio-button>
+					</paper-radio-group>
+					<h2>Размер ячейки</h2>
+					<paper-slider label="Размер ячейки сетки" id="cellSize"
+						pin="true" snaps="true" min="1" max="5" step="1"
+						value="{{cellSize}}"></paper-slider>&nbsp;<span>:{{cellSize}}</span>
+						<paper-checkbox id="cellSizeAuto" value="{{cellSizeAuto}}">Auto</paper-checkbox>
+					<h2>Радиус Heatmap</h2>
+					<paper-slider label="Радиус Heatmap" id="heatMapRadius" pin="true" snaps="true" min="0.004" max="0.016" step="0.001" value="{{heatMapRadius}}"></paper-slider>&nbsp;<span>{{heatMapRadius}}</span>
+					<!--globals.heatmap.radius, //0.004-0.016-->
+					<input type="hidden" name="visibleSelected" value="[[visibleSelected]]">
+					<input type="hidden" name="heatMapRadius" value="[[heatMapRadius]]">
+<!--
+					<paper-interval-slider label="Уровни zoom сетки" id="gridZoom"
+						pin="true" snaps="true"
+					   	min="10" max="16" step="1"
+					   	valueFrom="{{gridMinZoom}}" valueTo="{{gridMaxZoom}}"></paper-interval-slider>
+-->
+					<br>
+					<h2>Уровни zoom</h2>
+					<label>Сетка&nbsp;<span>{{gridMinZoom}}:{{gridMaxZoom}}</span></label>
+					<div class="layout horizontal">
+						<table><tr><td>
+							<paper-slider label="Уровни zoom сетки" id="gridMinZoom"
+								pin="true" snaps="true" min="10" max="16" step="1"
+								value="{{gridMinZoom}}"></paper-slider>
+						</td><td>
+							<paper-slider label="" id="gridMaxZoom"
+								pin="true" snaps="true" min="10" max="16" step="1"
+								value="{{gridMaxZoom}}"></paper-slider>
+						</td></tr></table>
+					</div>
+<!--
+					<div class="layout horizontal">
+						<table><tr><td>
+							<paper-input id="gridMinZoom" label="Min" value="{{gridMinZoom}}" style="width: 3em;"></paper-input>
+						</td><td>
+							<paper-input id="gridMaxZoom" label="Max" value="{{gridMaxZoom}}" style="width: 3em;"></paper-input>
+						</td></tr></table>
+					</div>
+-->
+<!--
+					<paper-interval-slider label="Уровни zoom маркеров" id="markersZoom"
+					   pin="true" snaps="true"
+					   min="14" max="20" step="1"
+					   valueFrom="{{markersMinZoom}}" valueTo="{{markersMaxZoom}}"></paper-interval-slider>&nbsp;<span>{{markersMinZoom}}:{{markersMaxZoom}}</span>
+-->
+					<label>Маркеры&nbsp;<span>{{markersMinZoom}}:{{markersMaxZoom}}</span></label>
+					<div class="layout horizontal">
+						<table><tr><td>
+							<paper-slider label="Уровни zoom маркеров Min" id="markersMinZoom"
+								pin="true" snaps="true" min="12" max="20" step="1"
+								value="{{markersMinZoom}}"></paper-slider>
+						</td><td>
+							<paper-slider label="Max" id="markersMaxZoom"
+								pin="true" snaps="true" min="12" max="20" step="1"
+								value="{{markersMaxZoom}}"></paper-slider>
+						</td></tr></table>
+					</div>
+<!--
+					<div class="layout horizontal">
+						<table><tr><td>
+							<paper-input id="markersMinZoom" label="Min" value="{{markersMinZoom}}" style="width: 3em;"></paper-input>
+						</td><td>
+							<paper-input id="markersMaxZoom" label="Max" value="{{markersMaxZoom}}" style="width: 3em;"></paper-input>
+						</td></tr></table>
+					</div>
+-->
+<!--
+					<paper-checkbox id="BUILDINGS">BUILDINGS</paper-checkbox><paper-checkbox id="HIGHWAYS">HIGHWAYS</paper-checkbox>
+-->
+				</div>
+
+				<div class="sidebar-pane" id="profile">
+					<h1 class="sidebar-header">Вход/регистрация<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+					<div class="layout vertical">
+						<login-form id="login-form"></login-form>
+					</div>
+				</div>
+
+				<div class="sidebar-pane" id="locate">
+					<h1 class="sidebar-header">Геолокация<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+					<div class="layout vertical" style="position: absolute; bottom: 0; display: none;">
+						<span>{{scaleText}}</span>
+						<span id="gridScale">{{gridScale}}</span>
+						<span id="gridScaleLabel">{{gridScaleLabel}}</span>
+						<span><i class="material-icons">gps_fixed</i></span>
+						<span id="location">{{locationText}}</span>
+					</div>
+				</div>
+
+				<div class="sidebar-pane" id="search">
+					<h1 class="sidebar-header">Поиск<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+					<paper-icon-item>
+						<iron-icon icon="search" item-icon></iron-icon>
+						<paper-input id="search-data" label="Поиск по адресу" icon="search" style="width: 600px;"></paper-input>
+					</paper-icon-item>
+				</div>
+
+				<div class="sidebar-pane" id="settings">
+					<style>
+						input {
+							width: 40px;
+						}
+						.settings label {
+							width: 80%;
+							display: flex;
+							justify-content: space-between;
+						}
+					</style>
+					<h1 class="sidebar-header">Настройки<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+					<geomarketing-settings id="settings-form"></geomarketing-settings>
+				</div>
+
+				<div class="sidebar-pane" id="atd">
+					<h1 class="sidebar-header">Административно/территориальное деление<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+					<!--<a href="http://www.openstreetmap.org/relation/60189" tabindex="-1">-->
+						<!--<paper-button raised on-click="handleSubarea" osmid="60189">Россия</paper-button>-->
+					<!--</a>-->
+				</div>
+			</div>
+		</div>
+		<google-chart id="chart" type="column" style="display:none;"
+			options='{"title": "", "legend": "none"}'
+			cols='[{"label": "Month", "type": "string"},{"label": "Days", "type": "number"}]'
+			rows='[]'>
+		</google-chart>
+        <style>
+        	leaflet-map {
+        		position: absolute;
+        		top: 0;
+        		bottom: 0;
+        		width: 100%;
+        		min-height: 500px;
+        		min-width: 900px;
+        	}
+            /* Default icon URLs */
+            .leaflet-default-icon-path {
+                background-image: url(/static/images/marker-icon.png);
+            }
+            .leaflet-default-shadow-path {
+                background-image: url(/static/images/marker-shadow.png);
+            }
+
+            div .toolbar-leaflet-control {
+        		width: 30px;
+            }
+
+            geomarketing-baselayers {
+            	display: none;
+            }
+        </style>
+    </template>
+    <script>
+        Polymer({
+            is: 'geomarketing-map'
+            , properties: {
+                settings: {
+                    type: Object
+                }
+                , maxMarkers: {
+                	type: Number
+                	, value: 300
+                    , reflectToAttribute: true
+                }
+                , dimensions: { // Boolean, Date, Number, String, Array or Object
+                    type: Object
+                }
+                , width: {
+                    type: Number
+                }
+                , height: {
+                    type: Number
+                }
+                , map: {
+                    type: Object
+                }
+                , inputData: {
+                    type: Array
+                }
+                , gridScale: {
+                    type: Number
+                }
+                , gridScaleLabel: {
+                	type: String
+                }
+                , locationText: {
+                	type: String
+                }
+                , scaleText: {
+                	type: String
+                }
+                , showGrid: {
+                    type: Boolean
+                    , value: true
+                    , reflectToAttribute: true
+                }
+                , showSettings: {
+                    type: String
+                    , value: "disabled"
+                    , reflectToAttribute: true
+                }
+                , showLayers: {
+                    type: String
+                    , value: "disabled"
+                    , observer: '_showLayersChanged'
+                    , reflectToAttribute: true
+                }
+                , isAdmin: {
+                    type: Boolean
+                    , value: false
+                }
+                , layersControl: {
+                	type: Object
+                	, value: null
+                }
+                , visibleSelected: {
+                	type: String
+                	, value: "grid"
+                }
+                , zoomLevels: {
+                	type: Object, value: {'GRID': {min: 11, max: 14}, 'MARKERS': {min: 13, max: 16}}
+                }
+				, gridMinZoom: { type: Number, value: 11 }
+				, gridMaxZoom: { type: Number, value: 14 }
+				, markersMinZoom: { type: Number, value: 14 }
+				, markersMaxZoom: { type: Number, value: 18 }
+				, cellSize: { type: Number, value: 3
+                    , observer: '_cellSizeChanged'
+				}	// 1..5
+				, cellSizeAuto: { type: Boolean
+					, value: false
+                    , observer: '_cellSizeAutoChanged'
+				}
+				, logged: { type: Boolean, value: false }
+				, osmid: { type: Number, value: 60189 }
+            }
+			, zoomForGrid: function(zoom) {
+				var gl= globals.layers['GRID'];
+				var hg= globals.map.map.hasLayer(gl);
+				if(zoom>=this.gridMinZoom && zoom<=this.gridMaxZoom) {
+					console.log(zoom, "grid on", this.gridMinZoom, this.gridMaxZoom);
+                   	if(globals.activeMarkerSet.has('GRID'))
+						this.refreshGrid({}, globals.map.map);
+					if(!hg)
+						gl.addTo(globals.map.map);
+					return true;
+				} else {
+					console.log(zoom, "grid off", this.gridMinZoom, this.gridMaxZoom);
+					if(hg)
+						gl.removeFrom(globals.map.map);
+					return false;
+				}
+			}
+			, zoomForMarkers: function(zoom) {
+				var ml= globals.layers['ATMPOS'];
+				var hm= globals.map.map.hasLayer(ml);
+				if(zoom>=this.markersMinZoom && zoom<=this.markersMaxZoom) {
+					console.log("markers on");
+					if(!hm)
+						ml.addTo(globals.map.map);
+					return true;
+				} else {
+					console.log("markers off");
+					if(hm)
+						ml.removeFrom(globals.map.map);
+					return false;
+				}
+			}
+            , handleZoomOut: function() {
+            	this.map.map.zoomOut();
+            }
+            , handleZoomIn: function() {
+            	this.map.map.zoomIn();
+            }
+            , handleLocate: function() {
+            	this.map.map.locate({'watch': false, 'setView': true, maxZoom: 18 });
+            }
+            , handleSubarea: function(osmid) {
+            	var that= this;
+            	overpassHelper.osm(osmid).then(function(subareas) {
+            	overpassHelper.relation(osmid).then(function(subareas) {
+					console.log(subareas);
+					$("#atd paper-button").remove();
+//					var ul= $("<ul>").appendTo("#atd");
+					$("<paper-button>")
+						.attr("raised", "raised")
+						.on("click", function(e) { return that.handleSubarea(osmid); })
+						.attr("osmid", osmid)
+						.html("..")
+						.appendTo("#atd")
+					;
+					_.forEach(subareas, function(sub) {
+						$("<paper-button>")
+							.attr("raised", "raised")
+							.on("click", function(e) { return that.handleSubarea(sub.ref); })
+							.attr("osmid", sub.ref)
+							.html(sub.ref)
+							.appendTo("#atd")
+						;
+					});
+            	});
+            }
+            , _cellSizeChanged: function() {
+            	var cellSize= this.get("cellSize");
+		        globals.cellSize= cellSize;
+		        if(globals.map && globals.map.map) {
+		        	var zoom= gridHelper.refreshGridScale(globals.map.map);
+                   	if(globals.activeMarkerSet.has('GRID')) {
+						if(this.zoomForGrid(zoom)) {
+							this.refreshGrid({}, globals.map.map);
+						} else {
+//							globals.activeMarkerSet.delete('GRID');
+						}
+					}
+				}
+            }
+            , _cellSizeAutoChanged: function() {
+            	globals.cellSizeAuto= this.get("cellSizeAuto");
+            }
+            , _showLayersChanged: function() {
+            	var showLayers= this.get("showLayers");
+				console.log("showLayersChanged", showLayers);
+
+				var overlays= {
+					"Транзакционная активность": { layer: globals.markerClusterLayer, roles: ["premium", "gold", "dnie"]}
+					, "Открытые офисы": { layer: globals.markerVspLayer, roles: ["premium", "gold"]}
+					, "Предложения на рынке": { layer: globals.markerPointsLayer, roles: ["premium", "gold", "dnie"]}
+					, "Недвижимость Сбербанка": { layer: globals.markerAsunLayer, roles: ["premium", "gold", "dnie", "df"]}
+					, "Кредиты": { layer: globals.markerDueLayer, roles: ["premium", "gold", "dnie"]}
+					, "Просроченные кредиты": { layer: globals.markerOverDueLayer, roles: ["premium", "gold", "dnie"]}
+					, "Финансовый профиль": { layer: globals.markerStreetLayer, roles: ["premium", "gold", "dnie"]}
+					, "Рынок телекомоператоров": { layer: globals.telecomLayer, roles: ["premium", "gold", "dnie"]}
+					, "Heatmap, недвижимость": { layer: globals.heatmapLayer, roles: ["premium", "gold", "dnie"]}
+					, 'Здания (OSM)': { layer: globals.layers['BUILDINGS'], roles: ["premium"]}
+					, 'Улицы (OSM)': { layer: globals.layers['HIGHWAYS'], roles: ["premium"]}
+				}
+				_.forEach(overlays, function(value, key) {
+					try { globals.layersControl.removeLayer(value.layer); } catch(e) { }
+				});
+				if(this.showLayers=="") {
+					_.forEach(overlays, function(value, key) {
+						var roles= value.roles;
+						if(_.find(roles, function(role) { return role==globals.roles; }))
+							try { globals.layersControl.addOverlay(value.layer, key); } catch(e) {}
+					});
+				}
+			}
+            , map: undefined
+/*
+			, keyEventTarget: {
+				type: Object
+				, value: function() {
+					return document.getElemenyById('login-scope');
+				}
+			}
+			, behaviors: [
+				Polymer.IronA11yKeysBehavior
+			]
+			, keyBindings: {
+				'shift+tab tab': '_tabPressed'
+				, 'enter': '_enterPressed'
+				, 'esc': '_escPressed'
+			}
+			, _tabPressed: function(event) {
+				console.log((event.detail.keyboardEvent.shiftKey ? 'shift-' : '')+'tab', event.detail, document.activeElement);
+				console.log(_.find(event.detail.keyboardEvent.path, function(e) {return e.tagName=="PAPER-INPUT" || e.tagName=="PAPER-BUTTON"}));
+//				$("#email").focus();
+//				$("#password").focus();
+			}
+			, _enterPressed: function(event) {
+				console.log('enter', event.detail);
+				if($("#email")[0].get("value")!="" && $("#password")[0].get("value")!="")
+					$("paper-button[dialog-confirm]").trigger('click');
+			}
+			, _escPressed: function(event) {
+				console.log('esc', event.detail);
+				$("paper-button[dialog-dismiss]").trigger('click');
+			}
+*/
+            , ready: function() {
+                var map = document.getElementById("map");
+                $("#li-settings").addClass(this.get("showSettings"));
+                $("#li-business").addClass(this.get("showLayers"));
+
+                this.set("cellSize", window.config['cell.size']);
+
+				var that= this;
+				$("<paper-button>")
+					.attr("raised", "raised")
+					.on("click", function(e) { return that.handleSubarea(60189); })
+					.attr("osmid", "60189")
+					.html("Россия")
+					.appendTo("#atd")
+				;
+
+                this.map= map;
+                globals.map= map;
+//			 	L.Map.include(L.LayerIndexMixin);
+
+//                this.fire('ready');
+//                this.refreshMarkers();
+
+//                L.tileLayer.provider('Esri').addTo(map);
+/*
+                L.tileLayer.here({
+                    appId: 'itFu46QqjFn8CY0rfLdB'
+                    , appCode: 'fUSfSpQI48RWqR4PxOu7Kg'
+                    , scheme: "normal.day"
+                }).addTo(map);
+*/
+
+//        	    globals.markerClusterLayer= L.markerClusterGroup({ showCoverageOnHover: true });
+
+                map.addEventListener("moveend", (function(e) {
+                    var map= e.target.map;
+                    var zoom= map.getZoom();
+                    var size= map.getSize();	// в пикселах, возвращается L.Point
+                    var bounds= map.getBounds();
+                    var mapLeft = map.getBounds().getWest().toFixed(6);
+                    var mapRight = map.getBounds().getEast().toFixed(6);
+                    var mapDown = map.getBounds().getSouth().toFixed(6);
+                    var mapUp = map.getBounds().getNorth().toFixed(6);
+                    var width= map.distance(map.getBounds().getSouthWest(), map.getBounds().getSouthEast());
+                    var height= map.distance(map.getBounds().getSouthWest(), map.getBounds().getNorthWest());
+                    this.set("height", height);
+                    this.set("width", width);
+                    var lat= map.getCenter().lat.toFixed(6);
+                    var lng= map.getCenter().lng.toFixed(6);
+                    var text = "@" + lat + "," + lng +",z"+zoom+", bounds: "+mapLeft+","+mapDown+":"+mapRight+","+mapUp+", width: "+width.toFixed(3)+", height: "+height.toFixed(3);
+                    this.set("scaleText", text);
+                }).bind(this));
+
+                map.addEventListener("zoomend", (function(e) {
+                    var map= e.target.map;
+                    var zoom= map.getZoom();
+                    e.stopPropagation();
+                    this.fire('zoomend', {'detail': e.detail, 'map': map});
+					var visibility= $("#visibility")[0].get("selected");
+                    heatmapHelper.refreshHeatmapLayer((visibility=="heatMapRent") ? "asun" : undefined);
+
+                    var zoomCoeff= this.refreshGridScale(map);	// 1 .. 5
+                    var width= map.distance(map.getBounds().getSouthWest(), map.getBounds().getSouthEast());
+                    var height= map.distance(map.getBounds().getSouthWest(), map.getBounds().getNorthWest());
+
+                    console.log("zoomend", zoom, zoomCoeff, width, height);
+                    // todo общая логика немного другая:
+                    // сетку и слои показываем в диапазоне масштабов. если диапазоны пересекаются, то может быть одновременно и сетка и маркеры
+                   	if(globals.activeMarkerSet.has('GRID')) {
+						if(this.zoomForGrid(zoom)) {
+							this.refreshGrid({}, globals.map.map);
+						} else {
+//							globals.activeMarkerSet.delete('GRID');
+						}
+					}
+
+                    this.zoomForMarkers(zoom);
+                }).bind(this));
+
+                map.addEventListener("dragend", (function(e) {
+                    console.debug("dragend");
+                    e.stopPropagation();
+                    var map= e.target.map;
+                    var zoom= map.getZoom();
+                    // todo copy zoomend logic
+                   	if(globals.activeMarkerSet.has('GRID') && this.zoomForGrid(zoom)) {
+                    	this.refreshGrid({}, map);
+                    }
+                    this.fire('dragend', {'detail': e.detail, 'map': map});
+                }).bind(this));
+
+                map.addEventListener("resize", (function(e) {
+                    console.debug("resize");
+                    e.stopPropagation();
+                    var map= e.target.map;
+                    var zoom= map.getZoom();
+                   	if(globals.activeMarkerSet.has('GRID') && this.zoomForGrid(zoom)) {
+                    	this.refreshGrid({}, map);
+					}
+//                    this.fire('resize', {'detail': e.detail, 'map': map});
+                }).bind(this));
+
+                map.addEventListener("draw:created", (function(e) {
+                    console.log("draw:created");
+                    var map= e.target.map;
+                }).bind(this));
+
+                map.addEventListener("dblclick", (function(e) {
+                    var map= _.find(e.path, (e)=>e.tagName=="LEAFLET-MAP").map;
+//                    var map= e.target.map;
+                    e.stopPropagation();
+                    console.log("dblclick", map);
+                    if(e.eventPhase==2)
+                        this.fire('dblclick', {'detail': e.detail, 'map': map});
+                }).bind(this));
+
+                map.addEventListener("click", (function(e) {
+//                    var map= e.target.map;
+//                    console.log("click", map);
+					L.control.sidebar('sidebar').close();
+                }).bind(this));
+
+                map.addEventListener("locationfound", (function(locationEvent) {
+//                    var map= locationEvent.target.map;
+                    console.log("locationfound", locationEvent);
+                    var detail= locationEvent.detail;
+                    var sw= detail.bounds.getSouthWest();
+                    var ne= detail.bounds.getNorthEast();
+                    var text= "Точность позиционирования: "+detail.accuracy+", м., bounds: "+sw.lat.toFixed(6)+","+sw.lng.toFixed(6)+":"+ne.lat.toFixed(6)+","+ne.lng.toFixed(6)+", latlng: "+detail.latlng.lat.toFixed(6)+","+detail.latlng.lng.toFixed(6);
+                    this.set("locationText", text);
+//                    $("#location").text(text);
+                    var lat= Number(detail.latitude);
+                    var lng= Number(detail.longitude);
+                    var radius= Number(detail.accuracy);
+//                    var circle= L.circle(new L.LatLng(lat, lng), radius); //.addTo(map)
+//                    map.map.addLayer(circle);
+                    this.fire('locationfound', locationEvent);
+                }).bind(this));
+
+                map.addEventListener("locationerror", (function(errorEvent) {
+//                    var map= errorEvent.target.map;
+                    console.log("locationerror", errorEvent, errorEvent.code, errorEvent.message);
+					document.getElementById('whereami').set("icon", "device:location-disabled");
+                    this.fire('locationerror', errorEvent);
+                }).bind(this));
+
+                map.addEventListener("map-ready", (function(e) {
+                    console.log("map-ready", e);
+//					var yandexLayer= new L.Yandex("satellite", {attribution: "&copy; Yandex"});
+//					//, {traffic:false, opacity:0.8, overlay:true,
+					var esriLayer= L.tileLayer.provider('Esri')
+					var baseLayer= L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18  });
+					var grayscaleLayer= L.tileLayer.grayscale('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 });
+					var hereLayer= L.tileLayer.here({appId: 'itFu46QqjFn8CY0rfLdB', appCode: 'fUSfSpQI48RWqR4PxOu7Kg', scheme: "hybrid.day", base: "aerial" });
+//					var ggl= new L.Google();
+					var googleStreets= L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+						maxZoom: 20,
+						subdomains:['mt0','mt1','mt2','mt3']
+					});
+
+					var googleHybrid= L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+						maxZoom: 20,
+						subdomains:['mt0','mt1','mt2','mt3']
+					});
+
+					var googleSat= L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+						maxZoom: 20,
+						subdomains:['mt0','mt1','mt2','mt3']
+					});
+
+					var googleTerrain= L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+						maxZoom: 20,
+						subdomains:['mt0','mt1','mt2','mt3']
+					});
+
+//					esriLayer.addTo(this.map.map);
+//					baseLayer.addTo(this.map.map);
+					grayscaleLayer.addTo(this.map.map);
+//					hereLayer.addTo(this.map.map);
+//					yandexLayer.addTo(this.map.map);
+//					googleTerrain.addTo(this.map.map);
+
+//	                this.map.map.createPane('pane600').style.zIndex = 600;
+//    	            this.map.map.createPane('pane400').style.zIndex = 400;
+
+//                    this.map.map.createPane('cian-pane');
+//                    this.map.map.createPane('places-pane');
+//                    this.map.map.createPane('tmp-pane');
+
+					$(globals.map.map.zoomControl._container).hide();
+					globals.map.map.zoomControl._container.remove();
+
+                    globals.mapInfoControl= L.control();
+                    globals.mapInfoControl.options= { position: "topright" };
+                    globals.mapInfoControl.onAdd= function (map) {
+                        this._div = L.DomUtil.create('div', 'info');
+						this._info= L.DomUtil.create('div', '', this._div);
+						this._detail = L.DomUtil.create('div', '', this._div);
+						this._chart= L.DomUtil.create('div', '', this._div);
+						$(this._chart).append($("#chart").clone());
+                        this.update();
+                        return this._div;
+                    };
+                    globals.mapInfoControl.update= function (props) {
+                        this._info.innerHTML = props ?
+                        	'Id ячейки - ' + props.name + '<br />Значение показателя в ячейке - ' + Math.round(props.coefficient * 100) / 100 + "%"
+	                        : window.config['info.text'] //'Наведите мышку на объект, чтобы посмотреть подрробности'
+						;
+                    };
+					globals.mapInfoControl.detail= function (html) {
+						this._detail.innerHTML = html;
+					};
+                    globals.mapInfoControl.addTo(this.map.map);
+
+                    var sidebar = L.control.sidebar('sidebar', {position: 'left'}).addTo(this.map.map);
+
+	                this.refreshMarkers();
+
+					var baseLayers= {
+						"OSM": baseLayer
+						, "grayscale": grayscaleLayer
+						, "ArcGIS": esriLayer
+						, "Google Sat": googleSat
+						, "Google Hybrid": googleHybrid
+						, "Google terrain": googleTerrain
+						, "Google streets": googleStreets
+					};
+//							"Yandex": yandexLayer
+//							, "HERE": hereLayer
+					var overlays= {
+					};
+
+					globals.layersControl= L.control.layers(baseLayers, overlays, { 'position': "bottomright", 'collapsed': true});
+					globals.layersControl.addTo(this.map.map);
+
+                    if(window.config['search.disabled']=="") {
+						var searchCtl= L.control.custom({
+							position: 'bottomleft'
+							, content:
+								'<paper-icon-item>'
+									+'<iron-icon icon="search" item-icon style="width: 28px;"></iron-icon>'
+									+'<paper-input id="search-data" label="Поиск по адресу" icon="search" style="width: 600px; display: none;"></paper-input>'
+								+'</paper-icon-item>'
+							, classes: 'layout horizontal leaflet-control leaflet-bar leaflet-bar-horizontal'
+							, style: {
+								margin: '5px'
+								, padding: '0px 0 0 0'
+								, cursor: 'pointer'
+								, 'background-color': 'white'
+								, 'border': '1px'
+							}
+							, datas: {
+							}
+							, events: {
+								click: function(data) {
+									console.log('search clicked', data.srcElement.id);
+									if($("#search-data").val()!="")
+										_.find(data.path, (e) => "LEAFLET-MAP"==e.tagName).fire("search", {'id': data.srcElement.id, 'value': $("#search-data").val()});
+								}
+								, mouseenter: function(data) {
+									$("#search-data").show();
+								}
+								, mouseleave: function(data) {
+									$("#search-data").hide();
+								}
+							}
+						});
+	                    searchCtl.addTo(this.map.map);
+                    }
+
+                    this.fire('map-ready', e);
+                }).bind(this));
+				map.addEventListener("overlayadd", (function(e) {
+	                console.log("overlayadd", e.detail);
+	                var id= e.detail.layer.options.id;
+	                globals.activeMarkerSet.add(id);
+//	                this.map.map.addLayer(e.detail.layer);
+					if(globals.layers[id])
+						globals.layers[id].addTo(globals.map.map);
+                }).bind(this));
+				map.addEventListener("overlayremove", (function(e) {
+	                console.log("overlayremove", e.detail);
+	                var id= e.detail.layer.options.id;
+	                globals.activeMarkerSet.delete(id);
+//	                this.map.map.removeLayer(e.detail.layer);
+					if(globals.layers[id])
+						globals.layers[id].removeFrom(globals.map.map);
+                }).bind(this));
+				map.addEventListener("baselayerchange", (function(e) {
+	                console.log("baselayerchange", e);
+                }).bind(this));
+				$("#search-data").on("change", function(e) {
+	                console.log("search-data", "change", e);
+				})
+            }
+            , locate: function () {
+                var map = document.getElementById("map");
+                map.map.locate({ 'watch': false, 'setView': true, maxZoom: 19 })
+            }
+			, refreshMarkers: function() {
+            	globals.markerPointsLayer= L.markerClusterGroup({ showCoverageOnHover: true, id: 'MARKETRENT', chunkedLoading: true });
+            	globals.markerPointsLayer.clearLayers();
+
+            	globals.markerPlacesLayer= L.layerGroup([]);
+            	globals.markerPlacesLayer.options= {id: 'PLACES'};
+            	globals.markerPlacesLayer.clearLayers();
+
+            	globals.markerVspLayer= L.layerGroup([]);
+            	globals.markerVspLayer.options= {id: 'VSP'};
+            	globals.markerVspLayer.clearLayers();
+
+            	globals.markerAsunLayer= L.layerGroup([]);
+            	globals.markerAsunLayer.options= {id: 'RENT'};
+            	globals.markerAsunLayer.clearLayers();
+
+            	globals.markerDueLayer= L.layerGroup([]);
+            	globals.markerDueLayer.options= {id: 'DUE'};
+            	globals.markerOverDueLayer= L.layerGroup([]);
+            	globals.markerOverDueLayer.options= {id: 'OVERDUE'};
+
+            	globals.markerTmpLayer= L.layerGroup([]);
+            	globals.markerTmpLayer.options= {id: 'CLICK'};
+            	globals.markerTmpLayer.clearLayers();
+
+				globals.gridGeoJson= { "type": "FeatureCollection", "features": [] };
+				globals.gridLayer= L.geoJson(globals.gridGeoJson, { id: 'GRID' });
+				globals.layers['GRID']= globals.gridLayer;
+
+//            	globals.gridLayer= L.layerGroup([]);
+//            	globals.gridLayer.options= {id: 'GRID'};
+//            	globals.gridLayer.clearLayers();
+
+				globals.geoJsonLayer= L.layerGroup([]);
+
+				heatmapHelper.refreshHeatmapLayer();
+				globals.layers['HEATMAP']= globals.heatmapLayer;
+
+				var streetAggregate= function(c) {
+					var childCount= c.layer.getChildCount();
+					var total= _.reduce(c.layer.getAllChildMarkers(), function(sum, m) {
+						var data= m.options.data;
+  						return {
+  							'due': sum.due + data.due
+  							, 'overdue': sum.overdue + data.overdue
+  							, 'nocredit': sum.nocredit + data.nocredit
+  						};
+					}, {due: 0, overdue: 0, nocredit});
+					var gt= total.due+total.overdue+total.nocredit;
+					return L.popup()
+						.setLatLng(c.layer.getLatLng())
+						.setContent('<div><google-chart type="column"'
+							+' options=\'{"title": null, "legend": "none", "backgroundColor": "transparent" }\''
+							+' cols=\'[{"label": "Month", "type": "string"},{"label": "Days", "type": "number"}]\''
+							+' rows=\'[["due", '+(total.due/gt*100)+'],["overdue", '+(total.overdue/gt*100)+'],["nocredit", '+(total.nocredit/gt*100)+']]\'>'
+						+'</google-chart></div>')
+					;
+				}
+
+				var telecomAggregate= function(c) {
+					var childCount= c.layer.getChildCount();
+					var total= _.reduce(c.layer.getAllChildMarkers(), function(sum, m) {
+						var data= m.options.data;
+  						return {
+  							'mgts': sum.mgts + data.mgts
+  							, 'akado': sum.akado + data.akado
+  							, 'beeline': sum.beeline + data.beeline
+  							, 'others': sum.others + data.others
+  						};
+					}, {mgts: 0, akado: 0, beeline: 0, others: 0});
+					return L.popup()
+						.setLatLng(c.layer.getLatLng())
+						.setContent('<div style="width: 100%;"><google-chart type="pie"'
+							+' options=\'{"title": "Распределение провайдеров", "legend": "right", "backgroundColor": "transparent"}\''
+							+' cols=\'[{"label": "Month", "type": "string"},{"label": "Days", "type": "number"}]\''
+							+' rows=\'[["Билайн", '+(total.beeline)+'],["Прочие", '+(total.others)+'],["МГТС", '+(total.mgts)+'],["Акадо", '+(total.akado)+']]\'>'
+						+'</google-chart></div>')
+					;
+				}
+
+                globals.markerStreetLayer= L.markerClusterGroup({
+					id: 'STREETS'
+					, showCoverageOnHover: true
+					, chunkedLoading: true
+                });
+/*
+				globals.markerStreetLayer.on('clustermouseover', function(c) {
+					var popup = streetAggregate(c);
+					popup.openOn(globals.map.map);
+				}).on('clustermouseout',function(c){
+				   globals.map.map.closePopup();
+				}).on('clusterclick',function(c){
+				   globals.map.map.closePopup();
+				});
+*/
+            	globals.layers['STREETS']= globals.markerStreetLayer;
+
+                globals.telecomLayer= L.markerClusterGroup({
+					id: 'TELECOM'
+					, showCoverageOnHover: true
+					, chunkedLoading: true
+                });
+				globals.telecomLayer.on('clustermouseover', function(c) {
+					var popup = telecomAggregate(c);
+					popup.openOn(globals.map.map);
+				}).on('clustermouseout',function(c){
+				   globals.map.map.closePopup();
+				}).on('clusterclick',function(c){
+				   globals.map.map.closePopup();
+				});
+				globals.layers['TELECOM']= globals.telecomLayer;
+
+				//Создать базовый слой. Три слоя могут быть базовыми: Транзакционный, Фин   профиль, Пешпоток
+            	globals.transactionLayet= L.layerGroup([]);	// транзакционная активность
+            	globals.profileLayet= L.layerGroup([]);		// финансовый профиль
+            	globals.flowLayet= L.layerGroup([]);		// пешеходный поток
+
+                if(globals.markerClusterLayer)
+                	this.map.map.removeLayer(globals.markerClusterLayer);
+
+				globals.layers['BUILDINGS']= L.layerGroup([]);
+				globals.layers['HIGHWAYS']= L.layerGroup([]);
+				globals.layers['BOUNDARIES']= L.layerGroup([]);
+
+				var iconCreateFunction= function (cluster) {
+					var childCount = cluster.getChildCount();
+					var total= _.reduce(cluster.getAllChildMarkers(), function(sum, m) {
+  						return {
+  							'due': sum['due'] + m.options.data.due
+  							, 'overdue': sum['overdue'] + m.options.data.overdue
+  							, 'nocredit': sum['nocredit'] + (1 - m.options.data.due)
+  						};
+					}, {due: 0, overdue: 0, nocredit: 0});
+					var gt= total.due+total.overdue+total.nocredit;
+//					console.log(total, gt);
+					var c = ' marker-cluster-';
+					if (childCount < 10) {
+						c += 'small';
+					} else if (childCount < 100) {
+						c += 'medium';
+					} else {
+						c += 'large';
+					}
+
+/*
+					return new L.DivIcon({
+						html: '<div><google-chart type="pie"'
+								+' options=\'{"title": null, "legend": "none"}\''
+								+' cols=\'[{"label": "Month", "type": "string"},{"label": "Days", "type": "number"}]\''
+								+' rows=\'[["due", '+(total.due/gt*100)+'],["overdue", '+(total.overdue/gt*100)+'],["nocredit", '+(total.nocredit/gt*100)+']]\'>'
+							+'</google-chart></div>'
+						, className: 'marker-cluster' + c
+						, iconSize: new L.Point(100, 100)
+					});
+*/
+					return L.piechartIcon({
+						iconSize: new L.Point(40, 40)
+						, className: 'marker-cluster' + c
+						, data: [
+							{ name: 'due', value: total.due/gt*100
+								, style: {
+                         			fillStyle: 'rgba(255,0,0,.5)',
+			                         strokeStyle: 'rgba(0,0,0,.5)',
+            			             lineWidth: 1
+                     			}
+							}
+				            , { name: 'overdue', value: total.overdue/gt*100
+								, style: {
+                         			fillStyle: 'rgba(0,0,255,.5)',
+			                         strokeStyle: 'rgba(0,0,0,.5)',
+            			             lineWidth: 1
+                     			}
+				            }
+				            , { name: 'nocredit', value: total.nocredit/gt*100
+								, style: {
+                         			fillStyle: 'rgba(0,255,0,.5)',
+			                         strokeStyle: 'rgba(0,0,0,.5)',
+            			             lineWidth: 1
+                     			}
+				            }
+				        ]
+					});
+				}
+
+				var clusterPopup= function(c) {
+					var childCount= c.layer.getChildCount();
+					var total= _.reduce(c.layer.getAllChildMarkers(), function(sum, m) {
+						var data= m.options.data;
+  						return {
+  							'due': sum['due'] + data.due
+  							, 'overdue': sum['overdue'] + data.overdue
+  							, 'nocredit': sum['nocredit'] + (1 - data.due)
+  							, count: {
+  								'ATM': (sum['count']['ATM']+(data.type=='ATM' ? 1 : 0))
+  								, 'POS': (sum['count']['POS']+(data.type=='POS' ? 1 : 0))
+  								, 'VSP': (sum['count']['VSP']+(data.type=='VSP' ? 1 : 0))
+  							}
+  						};
+					}, {due: 0, overdue: 0, nocredit: 0, count: {'ATM': 0, 'POS': 0, 'VSP': 0}});
+					var gt= total.due+total.overdue+total.nocredit;
+					var popup = L.popup()
+						.setLatLng(c.layer.getLatLng())
+						.setContent('Точек: '+c.layer._childCount
+						 	+"<br>ATM: "+total.count['ATM']
+						 	+"<br>POS: "+total.count['POS']
+						 	+"<br>ВСП: "+total.count['VSP']
+							+'<br>Кредиты: '+(total.due*100/childCount).toFixed()+'%<br>'
+							+'Просроченные кредиты: '+(total.overdue*100/childCount).toFixed()+'%'
+						).openOn(globals.map.map)
+					;
+				}
+
+                globals.markerClusterLayer= L.markerClusterGroup({
+					id: 'ATMPOS'
+					, showCoverageOnHover: true
+					, chunkedLoading: true
+//					, iconCreateFunction: iconCreateFunction
+                });
+				globals.markerClusterLayer
+				.on('clustermouseover', clusterPopup)
+				.on('clustermouseout',function(c){ globals.map.map.closePopup(); })
+				.on('clusterclick',function(c){ globals.map.map.closePopup(); });
+
+//				map.map.addLayer(globals.markerClusterLayer);
+				globals.layers= {
+					"ATMPOS": globals.markerClusterLayer
+					, "VSP": globals.markerVspLayer
+					, "RENT": globals.markerAsunLayer
+					, "MARKETRENT": globals.markerPointsLayer
+					, "DUE": globals.markerDueLayer
+					, "OVERDUE": globals.markerOverDueLayer
+					, "PLACES": globals.markerPlacesLayer
+					, "GRID": globals.gridLayer
+					, "STREETS": globals.markerStreetLayer
+					, "TELECOM": globals.telecomLayer
+					, "HEATMAP": globals.heatmapLayer
+					, 'BUILDINGS': globals.layers['BUILDINGS']
+					, 'HIGHWAYS': globals.layers['HIGHWAYS']
+				}
+            }
+            , refreshGridScale: function (map) {
+                console.debug("refreshGridScale", map);
+                var zoomCoefficient= gridHelper.refreshGridScale(map);
+                this.set("gridScale", zoomCoefficient);
+                this.set("gridScaleLabel", "Ячейка: "+zoomCoefficient * 100 + "м.");
+                return zoomCoefficient;
+            }
+            , refreshGrid: function (map) {
+                console.debug("refreshGrid", map);
+                return gridHelper.refreshGrid.bind(this)(map);
+            }
+            , calculateCellCoefficient: function calculateCellCoefficient(points, topLeftLng, topLeftLat, settings, maxCellCoefficient) {
+            	return gridHelper.calculateCellCoefficient(points, topLeftLng, topLeftLat, settings, maxCellCoefficient);
+            }
+            , getGridGeoJson: function(settings) {
+            	return (gridHelper.getGridGeoJson.bind(this))(settings);
+            }
+            , drawCity: function(regionName, properties, highlightFun) {
+			    if(globals.regionLayers[regionName])
+			    	return;
+			    var style= function(feature) {
+			    	return {
+                    	fill: true
+                    	, stroke: true
+                    	, color: '#333366'
+                    	, weight: 1
+                    	, opacity: 0.5
+                    	, dashArray: ''
+                    	, fillColor: '#222222'
+                    	, fillOpacity: 0.1
+                	}
+				};
+				var highlight= highlightFun||(function highlightFeature(e, feature) {
+					console.log('mouseover: '+feature.properties.regionName);
+					return true;
+/*
+					var layer = e.target;
+					var latlng= e.latlng;
+					layer.setStyle({ weight: 1, color: '#666', dashArray: '', fillOpacity: 0.7 });
+					if (!L.Browser.ie && !L.Browser.opera) { layer.bringToFront(); }
+					globals.mapInfoControl.detail(feature.properties.regionName);
+*/
+				});
+				highlight= _.throttle(highlight, 100)
+
+			    var url = "https://nominatim.openstreetmap.org/search";
+			    globals.regionRequests[regionName]= $.getJSON(url, {
+            		q: regionName
+            		, format: "json"
+            		, polygon_geojson: 1
+        		}).done(function(data) {
+					globals.regionLayers[regionName]= L.layerGroup([]);
+        			_.forEach(data, function(item, key) {
+						console.debug(regionName, item.display_name, item);
+						if(item.geojson && item.geojson.type!="Point" && (item.class=="boundary" || item.class=="place")) {
+							var feature= {
+								"type":"Feature"
+								, "id": regionName+"_bounds"
+								, "geometry": item.geojson
+								, "properties":{
+									"name": regionName+"_bounds"
+									, "regionName": regionName
+									, "place_id": item.place_id
+									, "class": item.class
+									, "display_name": item.display_name
+									, "osm_id": item.osm_id
+									, "osm_type": item.osm_type
+									, "type": item.type
+									, "icon": item.icon
+								}
+							}
+							console.info(feature);
+							if(properties)
+								feature.properties= _.extend(feature.properties, properties);
+
+							var layer= L.geoJson(feature, {
+								style: style
+//								, pane: regionName=='Россия' ? 'pane400' : 'pane600'
+								, onEachFeature: function onEachFeature(feature, layer) {
+//									layer.bindPopup(regionName);
+									layer.on({
+				                        mouseover: function highlightFeature(e) {
+				                        	if(!feature.properties.selected)
+				                        		return highlight(e, feature);
+										}
+				                        , mouseout: function resetHighlight(e) {
+				                        	if(!feature.properties.selected)
+					                        	layer.setStyle(style(feature));
+										}
+//										, contextmenu: function contextmenu(e) {
+//				                        	console.log('contextmenu', feature.properties.regionName);
+//										}
+										, click: function click(e) {
+				                        	var region= feature.properties.regionName;
+				                        	var st= style(layer);
+				                        	var selected= !!feature.properties.selected;
+				                        	if(e.originalEvent.ctrlKey) {
+					                        	console.log('ctrl-click', e, feature.properties.regionName, selected);
+												if(!selected) {	// выбор
+													st.color= '#660000';
+                    								st.fillOpacity= 0.3;
+                    								globals.regionsSelected[region]= {region: feature.properties.regionName, values: feature.properties.values}
+												} else {	// отмена
+													var defst= style(feature);
+													st.color= defst.color; //'#333366';
+                    								st.fillOpacity= defst.fillOpacity; //0.1;
+                    								delete globals.regionsSelected[region];
+												}
+												feature.properties.selected= !selected;
+				                        	} else {
+					                        	console.log('click', e, feature.properties.regionName, selected);
+					                        	// globals.regionsSelected очистить, сняв выделение с каждого
+					                        	// текущий добавить туда
+				                        	}
+				                        	layer.setStyle(st);
+				                        	return highlight(e, feature);
+										}
+									});
+								}
+							 });
+							globals.regionLayers[regionName].addLayer(layer);
+						}
+        			});
+					globals.regionLayers[regionName].addTo(globals.map.map);
+					return globals.regionLayers[regionName];
+				}).fail(function(xhr) {
+					console.log("Error loading getJSON");
+					return null;
+				});
+            }
+            , drawGeojson: function(city, geojson) {
+				globals.regionLayers[city.code]= L.layerGroup([]);
+			    var style= function(feature) {
+			    	return {
+                    	fill: false
+                    	, stroke: true
+                    	, color: '#000088'
+                    	, weight: 2
+                    	, opacity: 0.5
+                    	, dashArray: ''
+//                    	, fillOpacity: 0.1
+                	}
+				};
+				var feature= {
+					"type":"Feature"
+					, "id": city.code+"_bounds"
+					, "name": city.text
+					, "geometry": geojson
+				};
+				var layer= L.geoJson(feature, { 'style': style })
+				globals.regionLayers[city.code].addLayer(layer);
+				return layer.getBounds();
+			}
+			, buildings: function() {
+				return overpassHelper.buildings();
+			}
+			, highways: function() {
+				return overpassHelper.highways();
+			}
+            , drawRegion: function(osmid) {
+			    var url = "https://nominatim.openstreetmap.org/reverse";
+			    $.getJSON(url, {
+            		osm_id: osmid
+            		, osm_type: "R"
+            		, format: "json"
+            		, polygon_geojson: 1
+        		}).done(function(data) {
+					var feature= {
+						"type":"Feature"
+						, "id": osmid+"_bounds"
+						, "geometry": data.geojson
+						, "properties":{
+							"name": data['display_name']
+							, "regionName": data['display_name']
+							, "place_id": data.place_id
+							, "class": data.class
+							, "display_name": data.display_name
+							, "osm_id": data.osm_id
+							, "osm_type": data.osm_type
+							, "type": data.type
+							, "icon": data.icon
+						}
+					}
+					console.info(feature);
+					var layer= L.geoJson(feature, {}).addTo(globals.map.map);
+				});
+			}
+	    });
+    </script>
+	<!--<script src="/static/js/leaflet-dvf.js"></script>-->
+</dom-module>
