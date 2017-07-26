@@ -16,14 +16,9 @@
 <link rel="import" href="../paper-interval-slider/paper-interval-slider.html">
 
 <link rel="import" href="/webjars/leaflet-layers-control/leaflet-layers-control.html">
-<link rel="import" href="./geomarketing-layers.html">
-<link rel="import" href="./geomarketing-layers-tree.html">
-<link rel="import" href="./geomarketing-baselayers.html">
 <link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html">
 
 <link rel="import" href="/webjars/google-chart/google-chart.html">
-
-<link rel="import" href="/webjars/login-form/login-form.html">
 
 <!--<link rel="import" href="/webjars/iron-a11y-keys/iron-a11y-keys.html">-->
 <link rel="import" href="/webjars/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"/>
@@ -33,16 +28,10 @@
 <script src="http://api-maps.yandex.ru/2.0/?load=package.map&lang=ru-RU" type="text/javascript"></script>
 <script src="/js/Yandex.js"></script>
 <script src="/js/Google.js"></script>
-<script src="/js/Layer.Deferred.js"></script>
-<!--<script src="/js/Bing.js"></script>-->
 
 <script src="/js/Leaflet.Control.Custom.js"></script>
-<!--<script src="/js/Leaflet.LayerGroup.Collision.js"></script>-->
-<!--<script src="https://unpkg.com/rbush@2.0.1/rbush.js"></script>-->
-<script src="/js/leaflet.conditionalLayer.js"></script><!--работает-->
 <script src="/js/leaflet.markercluster-src.js"></script>
 <script src="/js/Leaflet.Photo.js"></script>
-<script src="/js/leaflet-sidebar.js"></script>
 <script src="http://sashakavun.github.io/leaflet-canvasicon/leaflet-canvasicon.js"></script>
 <script src="/js/leaflet-piechart.js"></script>
 
@@ -108,185 +97,6 @@
 				<span><i class="material-icons">gps_fixed</i></span><span id="location">{{locationText}}</span>
 			</div>
 -->
-		</div>
-		<div id="sidebar" class="sidebar collapsed">
-			<div class="sidebar-tabs">
-				<ul role="tablist">
-					<li class$="[[showLayers]]"><a href="#home" role="tab" title="Меню"><iron-icon icon="menu"></iron-icon></a></li>
-					<li><a href="#profile" role="tab" title="Вход"><iron-icon icon="account-box"></iron-icon></a></li>
-					<li class$="[[showLayers]]"><a href="#layers" role="tab" title="Слои"><iron-icon icon="maps:layers"></iron-icon></a></li>
-					<li id="li-business" class$="[[showLayers]]"><a href="#business" role="tab" title="Транзакции"><iron-icon icon="maps:local-atm"></iron-icon></a></li>
-					<li class$="[[showLayers]]"><a href="#search" role="tab" title="Поиск"><iron-icon icon="search"></iron-icon></a></li>
-					<!--<li><a href="#charts" role="tab" title="Диаграммы"><iron-icon icon="editor:pie-chart"></iron-icon></a></li>-->
-					<li><a title="Мое положение"><paper-icon-button on-click="handleLocate" title="Мое положение" id="whereami" icon="maps:my-location" noink></paper-icon-button></a></li>
-					<li><a title="Увеличить"><paper-icon-button on-click="handleZoomIn" title="Увеличить" id="zoom-in" icon="zoom-in" noink></paper-icon-button></a></li>
-					<li><a title="Уменьшить"><paper-icon-button on-click="handleZoomOut" title="Уменьшить" id="zoom-out" icon="zoom-out" noink></paper-icon-button></a></li>
-					<li><a title="АТД" href="#atd" role="tab"><iron-icon icon="maps:layers"></iron-icon></a></li>
-					<!--<li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>-->
-				</ul>
-
-				<ul role="tablist">
-					<!--todo config, role-->
-					<li id="li-settings" class$="[[showSettings]]"><a href="#settings" role="tab"><iron-icon icon="settings"></iron-icon></a></li>
-				</ul>
-			</div>
-
-			<!-- Tab panes -->
-			<div class="sidebar-content">
-				<div class="sidebar-pane" id="home">
-					<h1 class="sidebar-header">
-						Геомаркетинг 2.0
-						<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
-					</h1>
-					<paper-icon-item>
-						<iron-icon icon="search" item-icon></iron-icon>
-						<geomarketing-cities id="cities"></geomarketing-cities>
-					</paper-icon-item>
-<!--
-					<paper-icon-item>
-						<iron-icon icon="search" item-icon></iron-icon>
-						<paper-input id="search-data" label="Поиск по адресу" icon="search" style="width: 600px;"></paper-input>
-					</paper-icon-item>
--->
-				</div>
-
-				<div class="sidebar-pane" id="business">
-					<!--<template is="dom-if" if="{{isAdmin}}">-->
-						<h1 class="sidebar-header">Транзакции<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-						<geomarketing-layers id="multi-layers"></geomarketing-layers>
-						<geomarketing-layers-tree id="multi-layers-tree"></geomarketing-layers-tree>
-					<!--</template>-->
-				</div>
-
-				<div class="sidebar-pane" id="layers">
-					<h1 class="sidebar-header">Слои<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-					<geomarketing-baselayers id="base-layers"></geomarketing-baselayers>
-					<h2>Сетка/Heatmap</h2>
-					<!--todo on-change-->
-					<paper-radio-group label="Видимость" id="visibility" selected="{{visibleSelected}}" allow-empty-selection>
-						<paper-radio-button name="grid">Сетка</paper-radio-button><br>
-						<paper-radio-button name="heatmap">Heatmap (АСУН)</paper-radio-button><br>
-						<paper-radio-button name="heatmapRent">Heatmap (аренда)</paper-radio-button>
-					</paper-radio-group>
-					<h2>Размер ячейки</h2>
-					<paper-slider label="Размер ячейки сетки" id="cellSize"
-						pin="true" snaps="true" min="1" max="5" step="1"
-						value="{{cellSize}}"></paper-slider>&nbsp;<span>:{{cellSize}}</span>
-						<paper-checkbox id="cellSizeAuto" value="{{cellSizeAuto}}">Auto</paper-checkbox>
-					<h2>Радиус Heatmap</h2>
-					<paper-slider label="Радиус Heatmap" id="heatMapRadius" pin="true" snaps="true" min="0.004" max="0.016" step="0.001" value="{{heatMapRadius}}"></paper-slider>&nbsp;<span>{{heatMapRadius}}</span>
-					<!--globals.heatmap.radius, //0.004-0.016-->
-					<input type="hidden" name="visibleSelected" value="[[visibleSelected]]">
-					<input type="hidden" name="heatMapRadius" value="[[heatMapRadius]]">
-<!--
-					<paper-interval-slider label="Уровни zoom сетки" id="gridZoom"
-						pin="true" snaps="true"
-					   	min="10" max="16" step="1"
-					   	valueFrom="{{gridMinZoom}}" valueTo="{{gridMaxZoom}}"></paper-interval-slider>
--->
-					<br>
-					<h2>Уровни zoom</h2>
-					<label>Сетка&nbsp;<span>{{gridMinZoom}}:{{gridMaxZoom}}</span></label>
-					<div class="layout horizontal">
-						<table><tr><td>
-							<paper-slider label="Уровни zoom сетки" id="gridMinZoom"
-								pin="true" snaps="true" min="10" max="16" step="1"
-								value="{{gridMinZoom}}"></paper-slider>
-						</td><td>
-							<paper-slider label="" id="gridMaxZoom"
-								pin="true" snaps="true" min="10" max="16" step="1"
-								value="{{gridMaxZoom}}"></paper-slider>
-						</td></tr></table>
-					</div>
-<!--
-					<div class="layout horizontal">
-						<table><tr><td>
-							<paper-input id="gridMinZoom" label="Min" value="{{gridMinZoom}}" style="width: 3em;"></paper-input>
-						</td><td>
-							<paper-input id="gridMaxZoom" label="Max" value="{{gridMaxZoom}}" style="width: 3em;"></paper-input>
-						</td></tr></table>
-					</div>
--->
-<!--
-					<paper-interval-slider label="Уровни zoom маркеров" id="markersZoom"
-					   pin="true" snaps="true"
-					   min="14" max="20" step="1"
-					   valueFrom="{{markersMinZoom}}" valueTo="{{markersMaxZoom}}"></paper-interval-slider>&nbsp;<span>{{markersMinZoom}}:{{markersMaxZoom}}</span>
--->
-					<label>Маркеры&nbsp;<span>{{markersMinZoom}}:{{markersMaxZoom}}</span></label>
-					<div class="layout horizontal">
-						<table><tr><td>
-							<paper-slider label="Уровни zoom маркеров Min" id="markersMinZoom"
-								pin="true" snaps="true" min="12" max="20" step="1"
-								value="{{markersMinZoom}}"></paper-slider>
-						</td><td>
-							<paper-slider label="Max" id="markersMaxZoom"
-								pin="true" snaps="true" min="12" max="20" step="1"
-								value="{{markersMaxZoom}}"></paper-slider>
-						</td></tr></table>
-					</div>
-<!--
-					<div class="layout horizontal">
-						<table><tr><td>
-							<paper-input id="markersMinZoom" label="Min" value="{{markersMinZoom}}" style="width: 3em;"></paper-input>
-						</td><td>
-							<paper-input id="markersMaxZoom" label="Max" value="{{markersMaxZoom}}" style="width: 3em;"></paper-input>
-						</td></tr></table>
-					</div>
--->
-<!--
-					<paper-checkbox id="BUILDINGS">BUILDINGS</paper-checkbox><paper-checkbox id="HIGHWAYS">HIGHWAYS</paper-checkbox>
--->
-				</div>
-
-				<div class="sidebar-pane" id="profile">
-					<h1 class="sidebar-header">Вход/регистрация<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-					<div class="layout vertical">
-						<login-form id="login-form"></login-form>
-					</div>
-				</div>
-
-				<div class="sidebar-pane" id="locate">
-					<h1 class="sidebar-header">Геолокация<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-					<div class="layout vertical" style="position: absolute; bottom: 0; display: none;">
-						<span>{{scaleText}}</span>
-						<span id="gridScale">{{gridScale}}</span>
-						<span id="gridScaleLabel">{{gridScaleLabel}}</span>
-						<span><i class="material-icons">gps_fixed</i></span>
-						<span id="location">{{locationText}}</span>
-					</div>
-				</div>
-
-				<div class="sidebar-pane" id="search">
-					<h1 class="sidebar-header">Поиск<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-					<paper-icon-item>
-						<iron-icon icon="search" item-icon></iron-icon>
-						<paper-input id="search-data" label="Поиск по адресу" icon="search" style="width: 600px;"></paper-input>
-					</paper-icon-item>
-				</div>
-
-				<div class="sidebar-pane" id="settings">
-					<style>
-						input {
-							width: 40px;
-						}
-						.settings label {
-							width: 80%;
-							display: flex;
-							justify-content: space-between;
-						}
-					</style>
-					<h1 class="sidebar-header">Настройки<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-					<geomarketing-settings id="settings-form"></geomarketing-settings>
-				</div>
-
-				<div class="sidebar-pane" id="atd">
-					<h1 class="sidebar-header">Административно/территориальное деление<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-					<!--<a href="http://www.openstreetmap.org/relation/60189" tabindex="-1">-->
-						<!--<paper-button raised on-click="handleSubarea" osmid="60189">Россия</paper-button>-->
-					<!--</a>-->
-				</div>
-			</div>
 		</div>
 		<google-chart id="chart" type="column" style="display:none;"
 			options='{"title": "", "legend": "none"}'
@@ -515,37 +325,6 @@
 				}
 			}
             , map: undefined
-/*
-			, keyEventTarget: {
-				type: Object
-				, value: function() {
-					return document.getElemenyById('login-scope');
-				}
-			}
-			, behaviors: [
-				Polymer.IronA11yKeysBehavior
-			]
-			, keyBindings: {
-				'shift+tab tab': '_tabPressed'
-				, 'enter': '_enterPressed'
-				, 'esc': '_escPressed'
-			}
-			, _tabPressed: function(event) {
-				console.log((event.detail.keyboardEvent.shiftKey ? 'shift-' : '')+'tab', event.detail, document.activeElement);
-				console.log(_.find(event.detail.keyboardEvent.path, function(e) {return e.tagName=="PAPER-INPUT" || e.tagName=="PAPER-BUTTON"}));
-//				$("#email").focus();
-//				$("#password").focus();
-			}
-			, _enterPressed: function(event) {
-				console.log('enter', event.detail);
-				if($("#email")[0].get("value")!="" && $("#password")[0].get("value")!="")
-					$("paper-button[dialog-confirm]").trigger('click');
-			}
-			, _escPressed: function(event) {
-				console.log('esc', event.detail);
-				$("paper-button[dialog-dismiss]").trigger('click');
-			}
-*/
             , ready: function() {
                 var map = document.getElementById("map");
                 $("#li-settings").addClass(this.get("showSettings"));
