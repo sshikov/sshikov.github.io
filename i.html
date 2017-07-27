@@ -76,7 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (!webComponentsSupported) {
           var script = document.createElement('script');
           script.async = true;
-          script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
+          script.src = '/webjars/webcomponentsjs/webcomponents-lite.min.js';
           script.onload = onload;
           document.head.appendChild(script);
         } else {
@@ -87,7 +87,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // Load pre-caching Service Worker
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/service-worker.js');
+          navigator.serviceWorker.register('/js/service-worker.js');
         });
       }
     </script>
