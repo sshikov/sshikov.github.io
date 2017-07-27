@@ -1,0 +1,108 @@
+<link rel="import" href="leaflet-core.html">
+<script src="/static/js/Leaflet.Control.Custom.js"></script>
+
+<!--
+Scale control that shows the scale of the current center of screen in metric (m/km) and imperial (mi/ft) systems. (<a href="http://leafletjs.com/reference.html#control-scale">Leaflet Reference</a>).
+
+##### Example
+
+    <leaflet-scale-control> </leaflet-scale-control>
+	
+##### Example
+
+    <leaflet-scale-control metric>
+    </leaflet-scale-control>
+
+@element leaflet-scale-control
+@blurb Scale control that shows the scale of the current center of screen in metric (m/km) and imperial (mi/ft) systems. 
+@homepage https://leaflet-extras.github.io/leaflet-map/
+@demo https://leaflet-extras.github.io/leaflet-map/demo.html
+-->
+
+<dom-module id="leaflet-geo-control">
+	<style>
+		:host {
+			display: block;
+			width: 100px;
+			height: 100px;
+		}
+	</style>
+	<template>
+		<button type="button" class="btn btn-default">
+			<i class="fa fa-crosshairs"></i>
+		</button>
+		<button type="button" class="btn btn-info">
+			<i class="fa fa-compass"></i>
+		</button>
+		<button type="button" class="btn btn-primary">
+			<i class="fa fa-spinner fa-pulse fa-fw"></i>
+		</button>
+		<button type="button" class="btn btn-danger">
+			<i class="fa fa-times"></i>
+		</button>
+		<button type="button" class="btn btn-success">
+			<i class="fa fa-check"></i>
+		</button>
+		<button type="button" class="btn btn-warning">
+			<i class="fa fa-exclamation-triangle"></i>
+		</button>
+	</template>
+	<script>
+	"use strict";
+
+	Polymer({
+		is: 'leaflet-geo-control'
+		, properties: {
+			/**
+			 * The `position` attribute sets the position of the control (one of the map corners). See control positions.
+			 * 
+			 * @attribute position
+			 * @type string
+			 */
+			position: {
+				type: String,
+				value: "bottomleft"
+			},
+	
+			/**
+			 * The `max-width` attribute sets the maximum width of the control in pixels. The width is set dynamically to show round values (e.g. 100, 200, 500).
+			 * 
+			 * @attribute max-width
+			 * @type number
+			 */
+			maxWidth: {
+				type: Number,
+				value: 100
+			},
+	
+			container: {
+				type: Object,
+				observer: '_containerChanged'
+			}
+		}
+		, _containerChanged: function() {
+			console.log("_containerChanged", this);
+			if (this.container) {
+				var control = L.control.custom({
+					 position: this.position,
+					 maxWidth: this.maxWidth
+				});
+				this.control = control;
+				this.control.addTo(this.container);
+			}
+		}
+		, attached: function() {
+			console.log("attached", this);
+			if (this.container && this.control) {
+//				this.container.removeControl(this.control);
+			}
+		}
+		, detached: function() {
+			console.log("detached", this);
+			if (this.container && this.control) {
+//				this.container.removeControl(this.control);
+			}
+		}
+	});
+	</script>
+</dom-module>

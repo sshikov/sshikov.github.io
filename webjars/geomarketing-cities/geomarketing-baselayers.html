@@ -1,0 +1,83 @@
+<link rel="import" href="../polymer/polymer.html">
+<!--<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">-->
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-menu/paper-submenu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-icon-item/paper-icon-item.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+
+<dom-module id="geomarketing-baselayers">
+	<style>
+		:host {
+			display: block;
+		}
+        paper-item .iron-selected {
+            color: lightblue;
+			font-weight: normal;
+        }
+        paper-item[focused] {
+            color: lightblue;
+        }
+        paper-icon-item[focused] {
+            color: lightblue;
+        }
+        paper-icon-item[focused] iron-icon {
+            color: blue;
+        }
+        paper-item[focused] {
+            color: lightblue;
+        }
+	</style>
+	<template>
+		<paper-radio-group selected="google-streets" aria-labelledby="label3">
+		<paper-menu>
+			<paper-submenu>
+				<paper-item class="menu-trigger"><i class="fa fa-google" aria-hidden="true"></i>Gogle</paper-item>
+				<paper-menu class="menu-content">
+					<paper-item><paper-radio-button name="google-streets">Улицы</paper-radio-button></paper-item>
+					<paper-item><paper-radio-button name="google-satellite">Спутник</paper-radio-button></paper-item>
+					<paper-item><paper-radio-button name="google-terrain">Рельеф</paper-radio-button></paper-item>
+				</paper-menu>
+			</paper-submenu>
+			<paper-submenu>
+				<paper-item class="menu-trigger"><iron-icon src="/static/images/yandex.png" item-icon style="fill:blue"></iron-icon>Yandex</paper-item>
+				<paper-menu class="menu-content">
+					<paper-item><paper-radio-button name="yandex-streets">Улицы</paper-radio-button></paper-item>
+					<paper-item><paper-radio-button name="yandex-satellite">Спутник</paper-radio-button></paper-item>
+					<paper-item><paper-radio-button name="yandex-hybrid">Гибрид</paper-radio-button></paper-item>
+				</paper-menu>
+			</paper-submenu>
+			<paper-submenu>
+				<paper-item class="menu-trigger"><iron-icon icon="maps:local-atm" item-icon style="fill:blue"></iron-icon>ArcGIS</paper-item>
+				<paper-menu class="menu-content">
+					<paper-item><paper-radio-button name="google-terrain">Рельеф</paper-radio-button></paper-item>
+					<paper-item><paper-radio-button name="arcgis-satellite">Спутник</paper-radio-button></paper-item>
+				</paper-menu>
+			</paper-submenu>
+			<paper-submenu>
+				<paper-item class="menu-trigger"><iron-icon src="/static/images/icons8-OSM-48.png" item-icon style="fill:blue"></iron-icon>Разное</paper-item>
+				<paper-menu class="menu-content">
+					<paper-item><paper-radio-button name="osm">OpenStreetMap</paper-radio-button></paper-item>
+					<paper-item><paper-radio-button name="grayscale">Grayscale</paper-radio-button></paper-item>
+				</paper-menu>
+			</paper-submenu>
+		</paper-menu>
+		</paper-radio-group>
+	</template>
+	<script>
+		Polymer({
+			is: 'geomarketing-baselayers'
+			, properties: {
+				selected: {
+					type: String
+					, value: 'osm'
+				}
+			}
+			, ready: function() {
+			}
+			, handleSelection: function(e) {
+				L.control.sidebar('sidebar').close();
+			}
+		});
+	</script>
+</dom-module>

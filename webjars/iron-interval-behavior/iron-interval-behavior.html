@@ -1,0 +1,126 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+  /**
+   * `iron-interval-behavior` Managing a numeric interval within a given bounds
+   *
+   * @demo demo/index.html
+   * @polymerBehavior
+   */
+  Polymer.IronIntervalBehavior = {
+    properties: {
+      /**
+       * The number that represents the current from value.
+       */
+      valueFrom: {
+        type: Number,
+        value: 0,
+        notify: true,
+        reflectToAttribute: true
+      },
+      /**
+       * The number that represents the current to value.
+       */
+      valueTo: {
+        type: Number,
+        value: 0,
+        notify: true,
+        reflectToAttribute: true
+      },
+      /**
+       * The number that indicates the minimum value of the range.
+       */
+      min: {
+        type: Number,
+        value: 0,
+        notify: true
+      },
+      /**
+       * The number that indicates the maximum value of the range.
+       */
+      max: {
+        type: Number,
+        value: 100,
+        notify: true
+      },
+      /**
+       * Specifies the value granularity of the range's value.
+       */
+      step: {
+        type: Number,
+        value: 1,
+        notify: true
+      },
+      /**
+       * Returns the ratio of the from value.
+       */
+      ratioFrom: {
+        type: Number,
+        value: 0,
+        readOnly: true,
+        notify: true
+      },
+      /**
+       * Returns the ratio of the to value.
+       */
+      ratioTo: {
+        type: Number,
+        value: 0,
+        readOnly: true,
+        notify: true
+      }
+    },
+
+    observers: [
+      '_update(valueFrom, valueTo, min, max, step)'
+    ],
+
+    _calcRatio: function(value) {
+      return (this._clampValue(value) - this.min) / (this.max - this.min);
+    },
+
+    _clampValue: function(value) {
+      return Math.min(this.max, Math.max(this.min, this._calcStep(value)));
+    },
+
+    _clampValueFrom: function(value) {
+      return Math.min(this.valueTo, this._clampValue(value));
+    },
+
+    _clampValueTo: function(value) {
+      return Math.max(this.valueFrom, this._clampValue(value));
+    },
+
+    _calcStep: function(value) {
+      value = parseFloat(value);
+      if (!this.step) {
+        return value;
+      }
+      var numSteps = Math.round((value - this.min) / this.step);
+      if (this.step < 1) {
+        return numSteps / (1 / this.step) + this.min;
+      } else {
+        return numSteps * this.step + this.min;
+      }
+    },
+
+    _validateValueFrom: function() {
+      var v = this._clampValueFrom(this.valueFrom);
+      this.valueFrom = this.oldValueFrom = isNaN(v) ? this.oldValueFrom : v;
+      return this.valueFrom !== v;
+    },
+
+    _validateValueTo: function() {
+      var v = this._clampValueTo(this.valueTo);
+      this.valueTo = this.oldValueTo = isNaN(v) ? this.oldValueTo : v;
+      return this.valueTo !== v;
+    },
+    
+    _update: function() {
+      this._validateValueFrom();
+      this._validateValueTo();
+      this._setRatioFrom(this._calcRatio(this.valueFrom) * 100);
+      this._setRatioTo(this._calcRatio(this.valueTo) * 100);
+    }
+  };
+</script>

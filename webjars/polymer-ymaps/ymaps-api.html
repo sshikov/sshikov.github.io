@@ -1,0 +1,59 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="ymaps-api">
+  <script>
+    (function() {
+      var doc = document.currentScript.ownerDocument;
+      var loader = {
+        callbacks: [],
+        state: 'IDLE',
+        load(path) {
+          if(typeof window.ymaps !== 'undefined') {
+            this.state = 'FINISHED';
+          } else {
+            this.loadScript(path);
+          }
+        },
+        loadScript(path) {
+          var el = doc.createElement('script');
+          el.onload = this._onLoad.bind(this);
+          el.async = true;
+          el.src = path;
+          doc.head.appendChild(el);
+          this.state = 'LOADING';
+        },
+        _onLoad() {
+          this.state = 'FINISHED';
+          this.callbacks.forEach((callback) => {
+            callback();
+          });
+        },
+        onLoad(callback) {
+          if(this.state === 'FINISHED') {
+            callback();
+          } else {
+            this.callbacks.push(callback)
+          }
+        }
+      };
+
+      Polymer({
+        created() {
+          if(loader.state === 'IDLE') {
+            var API_URL = "http://api-maps.yandex.ru/2.1/?lang=en";
+//            var API_URL = "http://api-maps.yandex.ru/2.1/?lang=ru_RU&mode=debug";
+            loader.load(API_URL);
+          }
+          loader.onLoad(this.onReady.bind(this));
+        },
+
+        onReady() {
+          ymaps.ready(() => {
+            this.fire('ready');
+          }, this);
+        }
+      });
+
+    })();
+  </script>
+</dom-module>

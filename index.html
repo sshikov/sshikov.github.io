@@ -120,62 +120,27 @@
 		color: white;
 	}
 
-	.right {
-		background-color: #66A850;
-		width: 20%;
+	#right {
+		background-color: #99DDBB;
+//		width: 20%;
 	}
 
 	.chart {
 		background: linear-gradient(0deg, #1BAC9B, #66A850);
 		width: 30%;
+		min-width: 500px;
 	}
 
-        label {
-            font-family: Arial;
-        }
-        paper-checkbox {
-			font-family: Arial;
-        }
-        iron-selector {
-			font-family: Arial;
-        }
+	.logo {
+		width: 80%;
+		height: 80%;
+	}
 
-        paper-dialog {
-            z-index: 999 !important;
-        }
-
-        paper-item .iron-selected {
-            color: lightblue;
-			font-weight: normal;
-        }
-        paper-item[focused] {
-            color: lightblue;
-        }
-        paper-icon-item[focused] {
-            color: lightblue;
-        }
-        paper-icon-item[focused] iron-icon {
-            color: blue;
-        }
-        paper-item[focused] {
-            color: lightblue;
-        }
-
-        paper-checkbox {
-            background-color: white;
-        }
-        paper-checkbox[checked] {
-            background-color: white;
-            color: blue;
-        }
-
-        .point-icon {
-            color: orange;
-        }
-
-        .place-icon {
-            color: red;
-        }
+	#reset {
+		background-color: #66A850;
+		color: white;
+		width: 20em;
+	}
 	</style>
 	<link href="./css/main.css" rel="stylesheet"/>
 	<script src="./js/leaflet-providers.js"></script>
@@ -184,6 +149,7 @@
 	<script>
      		var regionsData= {};
 		var regionsSelected= {};
+		var layersSelected= {};
 		var layers= {};
 
        		var highlightRegion= function highlightRegion(e, feature) {
@@ -221,7 +187,7 @@
        			var i= 0;
        			var colors= ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff'];
        			var cols= [];
-//					cols.push({label: "Регион", type: "string"});
+
        			_.forEach(regionsSelected, function(v, k) {
        				console.log(k,v);
        				var color= colors[i % 6];
@@ -242,7 +208,6 @@
        				// Add the valueline path. todo color
        				svg.append("path")
        					.data([data])
-//							.attr("class", "line")
        					.attr("stroke", color)	//chroma.brewer.Blues[i]
        					.attr("fill", "none")
        					.attr("d", valueline)
@@ -268,15 +233,14 @@
        		  	;
 
        			var regions= "<ul>"+_.join(html, "")+"</ul>";
-       			$("#explain").html(regions);
+       			$("#selectedRegions").html(regions);
 
-       			if(Object.keys(globals.regionsSelected).length>0) {
-//						$("#chart")[0].set("cols", cols);
-//						$("#chart").show();
-       				$("#explain").show();
+       			if(Object.keys(regionsSelected).length>0) {
+				$("#chart").show();
+       				$("#selectedRegions").show();
        			} else {
-//						$("#chart").hide();
-       				$("#explain").hide();
+				$("#chart").hide();
+       				$("#selectedRegions").hide();
        			}
        		};
 
@@ -334,12 +298,12 @@
       		    	return {
 	                  	fill: true
         	          	, stroke: true
-                	  	, color: '#333366'
+                	  	, color: '#EFEFEF'
 	                  	, weight: 1
         	          	, opacity: 0.5
                 	  	, dashArray: ''
-                  		, fillColor: '#222222'
-	                  	, fillOpacity: 0.1
+                  		, fillColor: '#66A850'
+	                  	, fillOpacity: 0.25
               		}
 		};
 
@@ -397,19 +361,24 @@
 			       	                        	var region= feature.properties.regionName;
        	                			        	var st= style(layer);
 			       	                        	var selected= !!feature.properties.selected;
+								var selected= !!layer.options.selected;
        	                			        	if(e.originalEvent.ctrlKey) {
        		                        				console.log('ctrl-click', e, feature.properties.regionName, selected);
        									if(!selected) {	// выбор
-       										st.color= '#660000';
-		   								st.fillOpacity= 0.3;
-   										regionsSelected[region]= {region: feature.properties.regionName, values: feature.properties.values}
+       										st.color= '#FFA000';//#FFA000
+		   								st.fillOpacity= 1.0;
+										st.weight= 2;	
+   										regionsSelected[region]= {id: id, region: feature.properties.regionName, values: feature.properties.values}
+										layersSelected[id]= e.target;
        									} else {	// отмена
        										var defst= style(feature);
        										st.color= defst.color; //'#333366';
    										st.fillOpacity= defst.fillOpacity; //0.1;
    										delete regionsSelected[region];
+										delete layersSelected[id];
        									}
        									feature.properties.selected= !selected;
+									layer.options.selected= !selected;
 			       	                        	} else {
        		        			                	console.log('click', e, feature.properties.regionName, selected);
 			       	                        	}
@@ -438,6 +407,18 @@
 //	    			loadGeoJson(60189);
 	    			depositLoader();
 	    		});
+	    		$("#reset").on("click", function(e) {
+	       			_.forEach(regionsSelected, function(v, k) {
+					console.log(k, v);
+					Object.keys(layers[v.id]._layers)[0];
+					layersSelected[v.id].options.selected= false;
+					layersSelected[v.id].setStyle(style(layersSelected[v.id].feature));
+                        	});
+				regionsSelected= {};
+				$("#chart").html("");
+				$("#selectedRegions").html("");
+
+	    		});		
 		});
 
 	</script>
@@ -448,7 +429,7 @@
 		<div class="layout horizontal top">
 			<div><h2>Открытые данные</h2></div>
 			<div class="flex"></div>
-			<div><img src="images/white-logo-01.png"></div>
+			<div><img class="logo" src="images/white-logo-01.png"></div>
 		</div>
 		<div class="layout horizontal">
 			<leaflet-map latitude="55.753" longitude="37.629" zoom="13" maxZoom="18" id="map" noAttributionControl="true" class="layout flex" noZoomControl="true">
@@ -464,10 +445,11 @@
 			</leaflet-map>
 
 			<!--geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map-->
-			<div class="layout vertical right">
+			<div id="right" class="layout vertical center">
 				<div id="chart" class="chart"></div>
-				<paper-button>Сбросить сравнения</paper-button>
-				<div id="explain">пояснения</div>
+				<div class="layout left" id="selectedRegions"></div>
+				<paper-button id="reset">Сбросить сравнения</paper-button>
+				<div id="explain"></div>
 			</div>
 		</div>
 		<my-controls id="controls"></my-controls>

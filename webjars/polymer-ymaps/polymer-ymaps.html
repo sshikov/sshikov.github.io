@@ -1,0 +1,281 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="ymaps-api.html">
+
+<!--
+Element providing yandex-map for your site.
+
+##### Example
+```
+<yandex-map latitude="{{latitude}}" longitude="{{longitude}}" zoom="{{zoom}}"></yandex-map>
+```
+@element yandex-map
+@status alpha
+@homepage http://just-boris.github.io/polymer-ymaps
+-->
+<dom-module id="yandex-map">
+  <template>
+    <style>
+      :host {
+        position: relative;
+        display: block;
+      }
+      #map {
+        position: absolute;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+    </style>
+    <ymaps-api id="api" on-ready="createMap"></ymaps-api>
+    <div id="map"></div>
+    <content id="markers" select="yandex-map-marker"></content>
+  </template>
+  <script>
+    (function () {
+      Polymer({
+        is: 'yandex-map',
+
+        properties: {
+          /**
+           * A latitude of the map center
+           *
+           * @attribute latitude
+           * @type Number
+           */
+          latitude: {
+            type: Number,
+            notify: true,
+            value: 0
+          },
+
+          /**
+           * A longitude of the map center
+           *
+           * @attribute longitude
+           * @type Number
+           */
+          longitude: {
+            type: Number,
+            notify: true,
+            value: 0
+          },
+
+          /**
+           * Zoom of the map
+           *
+           * @attribute zoom
+           * @type Number
+           */
+          zoom: {
+            type: Number,
+            notify: true,
+            value: 8
+          },
+
+          /**
+           * Array containing map markers
+           * _Do not use it to add markers. Use element `yandex-map-marker` instead_
+           * @attribute placemarks
+           * @type Array
+           */
+          placemarks: {
+            type: Array,
+            value: () => {
+              return [];
+            }
+          },
+
+          /**
+           * Set this to true if you want that map would be adjusted to show whole markers on it
+           * @attribute autoFit
+           * @type Boolean
+           */
+          autoFit: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value: false
+          }
+
+        },
+
+        observers: [
+          'setPosition(latitude, longitude, zoom)'
+        ],
+
+        ready() {
+          if(this.$.markers) {
+            Array.from(this.$.markers.getDistributedNodes()).forEach(this.bindSelfToMarker, this);
+          }
+        },
+
+        createMap() {
+          var map = this.map = new ymaps.Map(this.$.map, {
+            center: [this.latitude, this.longitude],
+            zoom: this.zoom
+          });
+          this.placemarks.forEach((placemark) => {
+            map.geoObjects.add(placemark)
+          });
+          if(this.autoFit) {
+            this.fitMarkers();
+          }
+
+          map.events.add('boundschange', (event) => {
+            event.stopImmediatePropagation();
+
+            this.debounce('boundschange', () => {
+              var center = event.get('newCenter');
+              this.latitude = center[0];
+              this.longitude = center[1];
+              this.zoom = event.get('newZoom');
+            }, 1);
+          });
+        },
+
+        bindSelfToMarker(marker) {
+          marker.mapCtrl = this;
+        },
+
+        setPosition(latitude, longitude, zoom) {
+          if(this.map) {
+            this.map.setCenter([latitude, longitude], zoom);
+          }
+        },
+
+        fitMarkers() {
+          this.debounce('fitMarkers', () => {
+            if(this.map.geoObjects.getLength() > 0) {
+              var bounds = this.map.geoObjects.getBounds();
+              this.map.setBounds(bounds, {checkZoomRange: true});
+            }
+          }, 100);
+        },
+
+        addMarker(marker) {
+          this.placemarks.push(marker);
+          if(this.map) {
+            this.map.geoObjects.add(marker);
+            if(this.autoFit) {
+              this.fitMarkers();
+            }
+          }
+        },
+
+        removeMarker(marker) {
+          var index = this.placemarks.indexOf(marker);
+          if(index > -1) {
+            this.placemarks.splice(index, 1);
+            if(this.map) {
+              this.map.geoObjects.remove(marker);
+              if(this.autoFit) {
+                this.fitMarkers();
+              }
+            }
+          }
+        }
+
+      });
+
+    })();
+  </script>
+</dom-module>
+
+
+<!--
+Element representing map marker for &lt;yandex-map&gt;.
+It should be placed only inside that element
+
+##### Example
+```
+<yandex-map latitude="{{latitude}}" longitude="{{longitude}}" zoom="{{zoom}}">
+  <yandex-map-marker latitude={{marker.latitude}} longitude={{marker.longitude}}></yandex-map-marker>
+</yandex-map>
+```
+
+
+@element yandex-map-marker
+@status alpha
+@homepage http://just-boris.github.io/polymer-ymaps
+-->
+<dom-module id="yandex-map-marker">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+    <ymaps-api id="api" on-ready="createMarker"></ymaps-api>
+  </template>
+  <script>
+    Polymer({
+      is: 'yandex-map-marker',
+
+      properties: {
+
+        /**
+         * A latitude of marker
+         *
+         * @attribute latitude
+         * @type Number
+         */
+        latitude: {
+          type: Number,
+          value: 0.0
+        },
+
+        /**
+         * A longitude of marker
+         *
+         * @attribute longitude
+         * @type Number
+         */
+        longitude: {
+          type: Number,
+          value: 0.0
+        },
+
+        /**
+         * Content which should be shown inside marker
+         *
+         * @attribute iconContent
+         * @type String
+         */
+        iconContent: {
+          type: String,
+          value: ''
+        },
+
+        mapCtrl: {
+          type: Object,
+          value: () => {
+            return {};
+          }
+        }
+
+      },
+
+      iconContentChanged(oldVal, newVal) {
+        if(this.placemark) {
+          this.placemark.properties.set('iconContent', newVal);
+        }
+      },
+
+      createMarker() {
+        this.placemark = new ymaps.Placemark([this.latitude, this.longitude]);
+        this.parentNode.addMarker(this.placemark);
+        this.placemark.properties.set('iconContent', this.iconContent);
+      },
+
+      attached() {
+        this.mapCtrl = this.parentElement;
+      },
+
+      detached() {
+        this.mapCtrl.removeMarker(this.placemark);
+      }
+
+    });
+  </script>
+</dom-module>

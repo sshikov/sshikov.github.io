@@ -1,0 +1,266 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+  /* global hc */
+  // Ensure our namespace exists
+  window.hc = window.hc || {};
+
+  /**
+   * Use `hc.TreeViewBehavior` to implement a tree based around a flat data structure and built on top of
+   *  `hc-nested-list`.
+   *
+   * @polymerBehavior hc.TreeViewBehavior
+   */
+  hc.TreeViewBehavior = {
+    properties: {
+      /* Used to allow changing what the tree node's id is */
+      itemIdName: {
+        type: String,
+        value: 'id'
+      },
+      /* Used to allow changing what the tree node's parent id is */
+      itemParentIdName: {
+        type: String,
+        value: 'parentId'
+      },
+      /* The list of items to display in the tree, using a flat structure */
+      items: Array,
+      /* The list of all selected items without duplicates */
+      selectedItems: {
+        type: Array,
+        value: () => [],
+        notify: true
+      },
+      /**
+       * The parts object used by the list element
+       *
+       * @private
+       */
+      _parts: Object
+    },
+    listeners: {
+      'item-selected-changed': 'itemSelectedChanged',
+      'item-state-changed': 'itemStateChanged'
+    },
+    /**
+     * Collapses the tree while maintaining the current selection states
+     *
+     * @param {Array.<Object>} [items = this.items]
+     * @param {Object} [parts = this._parts]
+     * @param {Boolean} [preventUpdate] - blocks the update to parts and blocks template updating
+     */
+    collapse(items = this.items, parts = this._parts, preventUpdate = false) {
+      if (!items.length) return;
+
+      for(let i = 0; i < items.length; i++) {
+        const item = items[i];
+        item.open = false;
+
+        if (!item[this.itemParentIdName])
+          parts.root[item[this.itemIdName]].open = false;
+
+        const itemParts = parts[items[i][this.itemIdName]];
+        if (itemParts)
+          this.collapse(itemParts, parts, true);
+      }
+
+      if (!preventUpdate)
+        this.debounce('collapseUpdate', () => {
+          this.set('_parts', Object.assign({}, this._parts));
+        });
+    },
+    /**
+     * Takes an array of one or more items and removes them from the selectedItems array.
+     *
+     * @param {Array.<Object>} [items = this.selectedItems]
+     * @param {Boolean} [preventUpdate] - blocks the call to _updateState to block template updating
+     */
+    deselectItems(items = this.selectedItems, preventUpdate) {
+      let selectedItems = [];
+
+      const getNodeId = (i) => i[this.itemIdName];
+
+      // Map to Ids for perf
+      selectedItems = this.selectedItems.map(getNodeId);
+      const passedItems = items.map(getNodeId);
+
+      // Filter by Ids for perf
+      selectedItems = selectedItems.filter((i) => passedItems.indexOf(i) === -1);
+
+      // Update selectedItems if there was an item removed
+      if (this.selectedItems.length !== selectedItems.length) {
+        const getItemById = (id) => this.selectedItems.find((i) => getNodeId(i) === id);
+
+        // Re-map ids to items if not empty
+        if (selectedItems.length > 0) selectedItems = selectedItems.map(getItemById);
+
+        this.set('selectedItems', selectedItems);
+        if (!preventUpdate) this._updateState(items, 'off');
+      }
+    },
+    /**
+     * Fetches the parent for the given item.
+     *
+     * @param {Object} item
+     * @returns {Object|undefined}
+     */
+    getParent(item) {
+      return this.$.list.getParent(item);
+    },
+    /**
+     * Makes calls to select or deselect the item based on the selected in the event.
+     *
+     * @listens hc-tree-view-behavior#item-selected-changed
+     * @param {CustomEvent} [event]
+     * @param {Object} detail
+     */
+    itemSelectedChanged(event, detail) {
+      this[detail.selected ? 'selectItems' : 'deselectItems']([detail.item], true);
+    },
+    /**
+     * Updates the parents and children of this item that it's state was changed, update thiers as well if needed.
+     *
+     * @listens hc-tree-view-behavior#item-state-changed
+     * @param {CustomEvent} event
+     * @param {Object} detail
+     */
+    itemStateChanged(event, detail) {
+      const {item, state} = detail;
+
+      // Reject duplicated events
+      if (item.state === state) return;
+      item.state = state;
+
+      // Change selected status for parents up the chain
+      const parent = this._updateParents(item, state);
+      if (parent)
+        this[parent.state === 'on' ? 'selectItems' : 'deselectItems']([parent], true);
+
+      // Change selected status for children, even if they are hidden.
+      this[state === 'on' ? 'selectItems' : 'deselectItems'](this._updateChildren(item, state), true);
+      this.debounce('itemStateChanged', () => {
+        this.set('_parts', Object.assign({}, this._parts));
+      });
+    },
+    /**
+     * Clears all state from the tree, resetting back to the original tree.
+     */
+    reset() {
+      this.deselectItems();
+      this.set('items', Object.assign([], this.items));
+    },
+    /**
+     * Takes an array of one or more items adds them to the selectedItems array, preventing duplicates.
+     *
+     * @param {Array.<Object>} items
+     * @param {Boolean} [preventUpdate] - blocks the call to _updateState to block template updating
+     */
+    selectItems(items, preventUpdate) {
+      // Add all of the items to the selectedItems as a set
+      const selectedSet = new Set(this.selectedItems);
+      items.forEach((item) => selectedSet.add(item));
+
+      // Update selectedItems with an array version if an item was added
+      if (this.selectedItems.length !== selectedSet.size) {
+        this.set('selectedItems', Array.from(selectedSet));
+        if (!preventUpdate) this._updateState(items, 'on');
+      }
+    },
+    /**
+     * Updates the state on all children for the given item, returning the items that were updated.
+     *
+     * @private
+     * @param {Object} item
+     * @param {Boolean} state
+     * @param {Object} [parts = this._parts]
+     * @returns {Array.<Object>}
+     */
+    _updateChildren(item, state, parts = this._parts) {
+      const children = parts[item[this.itemIdName]];
+      if (!children || !state) return [];
+
+      const updatedChildren = [];
+
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        // Only update the children if the state actually changes.
+        if (child.state !== state) {
+          child.state = state;
+          updatedChildren.push(children[i]);
+          updatedChildren.push(...this._updateChildren(child, state, parts));
+        }
+      }
+
+      return updatedChildren;
+    },
+    /**
+     * Updates the state on the parent for the given item and all of it's parents.
+     *
+     * @private
+     * @param {Object} item
+     * @param {Boolean} state
+     * @param {Object} [parts = this._parts]
+     * @return {Object|undefined} - Parent of the item if it exists
+     */
+    _updateParents(item, state, parts = this._parts) {
+      // Update up the chain (parents)
+      const parent = this.getParent(item);
+
+      if (parent && parent.state !== state) {
+        const siblings = parts[parent[this.itemIdName]];
+        const prevState = parent.state;
+
+        // If all of the siblings share the same state then set it for the parent, otherwise it's indeterminate
+        const newState = siblings.every((i) => i.state === state) ? state : null;
+
+        // If there's a change, update
+        if (prevState !== newState) {
+          parent.state = newState;
+          this._updateParents(parent, state, parts);
+        }
+      }
+      return parent;
+    },
+    /**
+     * Takes a list of items and updates their state in parts.
+     *
+     * @private
+     * @param {Array.<Object>} items
+     * @param {String} state
+     * @param {Object} [parts = this._parts]
+     */
+    _updateState(items, state, parts = this._parts) {
+      if (!items || !parts) return;
+      // Filter items to remove children that have a parent in the array
+      items.filter((item) => !items.some((i) => i[this.itemIdName] === item[this.itemParentIdName])).
+        // Pass the filtered items into _updateChildren
+        forEach((item) => {
+          // Find the item in the parts object
+          const parentId = this.$.list._getParentId(item);
+          const partItem = parts[parentId].find((i) => i[this.itemIdName] === item[this.itemIdName]);
+          // Trigger a state change that will propagate
+          this.itemStateChanged(null, {
+            item: partItem,
+            state
+          });
+        });
+    }
+  };
+
+  /**
+   * Event for changing the selection status of a tree node
+   *
+   * @event hc-tree-view-behavior#item-selected-changed
+   * @type {Object}
+   * @property {Object} item - the item to change selection status for
+   * @property {Boolean} selection - the updated selection status
+   */
+  /**
+   * Event for changing the state of a tree node
+   *
+   * @event hc-tree-view-behavior#item-state-changed
+   * @type {Object}
+   * @property {Object} item - the item to change state for
+   * @property {Boolean} state - the updated state
+   */
+</script>

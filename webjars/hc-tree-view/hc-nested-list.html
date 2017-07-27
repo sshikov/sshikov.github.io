@@ -1,0 +1,63 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="hc-nested-list-behavior.html">
+<link rel="import" href="../iron-list/iron-list.html">
+
+<!--
+`hc-nested-list` an optimized way to render a list of "nested" items as a flat data structure,
+built on top of `iron-list` for performance.
+
+### Styling
+Custom property | Description | Default
+----------------|-------------|----------
+`--hc-nested-list` | A mixin for styling this element | {}
+`--hc-nested-list-loader` | A mixin for styling the loader wrapping element | {}
+`--hc-nested-list-items` | A mixin for styling the iron-list within this element | {}
+
+@demo demo/hc-nested-list.html
+-->
+<dom-module id="hc-nested-list">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding-top: 8px;
+        padding-bottom: 8px;
+
+        @apply --hc-nested-list;
+      }
+      #loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 999;
+
+        @apply --hc-nested-list-loader;
+      }
+      #list {
+        @apply --hc-nested-list-items;
+      }
+    </style>
+
+    <iron-list
+      id="list"
+      items="[[_items]]"
+      max-physical-count="[[_items.length]]"
+      as="item"
+      >
+      <div id="loader" hidden$="[[!isLoading]]">
+        <slot name="loader"></slot>
+      </div>
+      <slot></slot>
+    </iron-list>
+  </template>
+
+  <script>
+    Polymer({
+      /* global hc */
+      is: 'hc-nested-list',
+      behaviors: [hc.NestedListBehavior]
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,29 @@
+<div class="autocomplete-wrapper">
+    <paper-input id="address-search" label="Поиск по адресу"></paper-input>
+    <paper-autocomplete-suggestions for="address-search" source="[[states]]"></paper-autocomplete-suggestions>
+    <script>
+        $(document).ready(function () {
+            // Async call needed here for IE11/Edge compatibility.
+            Polymer.Base.async(function () {
+                var cities = [
+                    {name: "NEFTEGORSK", code="6301700100000", city: "Нефтегорск"}
+                    {name: "OTRADNIY", code="6300000500000", city: "Отрадный"}
+                    {name: "POKHVISTNEVO", code="6300000900000", city: "Похвистнево"}
+                    {name: "TOLIATTY", code="6300000700000", city: "Тольятти"}
+                    {name: "SUKHODOL", code="6302100004500", city: "Суходол"}
+                    {name: "KINEL-CHERKASSY", code="6301100000100", city: "Кинель-Черкассы"}
+                ]
+                var autocompleteSuggestions = document.querySelector('paper-autocomplete-suggestions');
+
+                autocompleteSuggestions.source = states;
+
+                autocompleteSuggestions.addEventListener('autocomplete-selected', function () {
+                    <!--var paperToast = document.querySelector('paper-toast');-->
+                    <!--var selected = event.detail.text;-->
+                    <!--paperToast.text = 'Selected: ' + selected;-->
+                    <!--paperToast.show();-->
+                });
+            });
+        });
+    </script>
+</div>

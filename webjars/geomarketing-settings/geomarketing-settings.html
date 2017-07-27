@@ -1,0 +1,153 @@
+<dom-module id="geomarketing-settings">
+	<style>
+	:host {
+		display: block;
+    }
+    input {
+    	width: 40px;
+    }
+    .settings label {
+		width: 80%;
+		display: flex;
+		justify-content: space-between;
+	}
+</style>
+<template>
+	<paper-dialog id="settings-dialog" modal auto-fit-on-attach>
+		<h2>Настройки</h2>
+		<paper-dialog-scrollable>
+			<div class="settings layout vertical">
+				<label>Ветка выдачи: <input type="number" max="1" step="0.1" value="{{atmCashOutWeight}}"></label><br>
+				<label>Ветка внесения: <input type="number" max="1" step="0.1" value="{{atmCashInWeight}}"></label><br>
+				<label>Выдача (кол-во): <input type="number" max="1" step="0.1" value="{{atmCashOutCountWeight}}"></label><br>
+				<label>Выдача (сумма): <input type="number" max="1" step="0.1" value="{{atmCashOutAmountWeight}}"></label><br>
+				<label>Внесение (кол-во): <input type="number" max="1" step="0.1" value="{{atmCashInCountWeight}}"></label><br>
+				<label>Внесение (сумма): <input type="number" max="1" step="0.1" value="{{atmCashInAmountWeight}}"></label><br>
+				<label>POS (кол-во операций): <input type="number" max="1" step="0.1" value="{{posTransCountWeight}}"></label><br>
+				<label>POS (средний чек): <input type="number" max="1" step="0.1" value="{{posTransAvgWeight}}"></label><br>
+				<label>ВСП (талоны СУО): <input type="number" max="1" step="0.1" value="{{vspWeight}}"></label><br>
+				<label>Зарплата: <input type="number" max="1" step="0.1" value="{{salaryWeight}}"></label><br>
+				<label>Баланс: <input type="number" max="1" step="0.1" value="{{balanceWeight}}"></label>
+				<label>Коэффициент Вымпелком: <input type="number" max="1" step="0.1" value="{{beelineC}}"></label>
+				<label>Коэффициент Сбербанк: <input type="number" max="1" step="0.1" value="{{sberbankC}}"></label>
+			</div>
+		</paper-dialog-scrollable>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Cancel</paper-button>
+			<paper-button dialog-confirm autofocus>Accept</paper-button>
+		</div>
+	</paper-dialog>
+</template>
+<script>
+	Polymer({
+		is: 'geomarketing-settings'
+		, properties: {
+			atmCashOutWeight: { type: Number, value: 0.5, observer: '_atmCashOutWeightChanged' }
+			, atmCashInWeight: { type: Number, value: 0.5, observer: '_atmCashInWeightChanged' }
+			, atmCashOutCountWeight: { type: Number, value: 0.5, observer: '_atmCashInWeightChanged' }
+			, atmCashOutAmountWeight: { type: Number, value: 0.5, observer: '_atmCashOutAmountWeightChanged' }
+			, atmCashInCountWeight: { type: Number, value: 0.5, observer: '_atmCashInCountWeightChanged' }
+			, atmCashInAmountWeight: { type: Number, value: 0.5, observer: '_atmCashInAmountWeightChanged' }
+			, posTransCountWeight: { type: Number, value: 0.5, observer: '_posTransCountWeightChanged' }
+			, posTransAvgWeight: { type: Number, value: 0.5, observer: '_posTransAvgWeightChanged' }
+			, vspWeight: { type: Number, value: 0.5, observer: '_vspWeightChanged' }
+			, salaryWeight: { type: Number, value: 0.5, observer: '_salaryWeightChanged' }
+			, balanceWeight: { type: Number, value: 0.5, observer: '_balanceWeightChanged' }
+			, beelineC: { type: Number, value: 0, observer: '_atmCashInWeightChanged' }
+        	, sberbankC: { type: Number, value: 1, observer: '_atmCashInWeightChanged' }
+		}
+		, dependentProperties: {}
+		, ready: function() {
+//			_.forEach(this.settings, function(value, key) {
+//				this.set(key, value);
+//			})
+		}
+		, _atmCashOutWeightChanged: function(newValue, oldValue) {
+			console.log("atmCashOutWeightChanged", newValue);
+			this.atmCashInWeight= 1-newValue;
+			this.fire('settings-changed');
+		}
+		, _atmCashInWeightChanged: function(newValue, oldValue) {
+			console.log("atmCashInWeightChanged", newValue);
+			this.atmCashOutWeight= 1-newValue;
+			this.fire('settings-changed');
+		}
+		, _atmCashOutCountWeightChanged: function(newValue, oldValue) {
+			this.atmCashOutAmountWeight= 1-newValue;
+			this.fire('settings');
+		}
+		, _atmCashOutAmountWeightChanged: function(newValue, oldValue) {
+			this.atmCashOutCountWeight= 1-newValue;
+			this.fire('settings');
+		}
+		, _atmCashInCountWeightChanged: function(newValue, oldValue) {
+			this.atmCashInAmountWeight= 1-newValue;
+			this.fire('settings');
+		}
+		, _atmCashInAmountWeightChanged: function(newValue, oldValue) {
+			this.atmCashInCountWeight= 1-newValue;
+			this.fire('settings');
+		}
+		, _posTransCountWeightChanged: function(newValue, oldValue) {
+			this.posTransAvgWeight= 1-newValue;
+			this.fire('settings');
+		}
+		, _posTransAvgWeightChanged: function(newValue, oldValue) {
+			this.posTransCountWeight= 1-newValue;
+			this.fire('settings');
+		}
+		, _vspWeightChanged: function(newValue, oldValue) {
+			this.fire('settings');
+		}
+		, _salaryWeightChanged: function(newValue, oldValue) {
+			this.balanceWeight= 1-newValue;
+			this.fire('settings');
+		}
+		, _balanceWeightChanged: function(newValue, oldValue) {
+			this.salaryWeight= 1-newValue;
+			this.fire('settings');
+		}
+		, _beelineCChanged: function(newValue, oldValue) {
+			this.sberbankC= 1-newValue;
+			this.fire('settings');
+		}
+		, _sberbankCChanged: function(newValue, oldValue) {
+			this.beelineC= 1-newValue;
+			this.fire('settings');
+		}
+		, open: function() {
+			$("#settings-dialog").open();
+		}
+/*
+	    $scope.applySettings = function () {
+	        var changedPropertyName = findChangedProperty(oldSettings, $scope.settings);
+	        $scope.settings[dependentProperties[changedPropertyName]] = (100 - $scope.settings[changedPropertyName] * 100) / 100;
+	        oldSettings = $.extend({}, $scope.settings);
+//	        inputDataProcessor.readInputData($scope.settings);
+//	        gridHelper.refreshGrid($scope.settings);
+
+	        if ($scope.showVspStats) {
+	            $scope.vspPointsWithStats = getCellCorfficientForVSP($scope.settings);
+	        }
+	    };
+*/
+		, getSettings: function() {
+			return {
+				atmCashOutWeight: this.get('atmCashOutWeight')
+				, atmCashOutCountWeight: this.get('atmCashOutCountWeight')
+				, atmCashInWeight: this.get('atmCashInWeight')
+				, atmCashInCountWeight: this.get('atmCashInCountWeight')
+				, posTransCountWeight: this.get('posTransCountWeight')
+				, posTransAvgWeight: this.get('posTransAvgWeight')
+				, vspWeight: this.get('vspWeight')
+				, atmCashOutAmountWeight: this.get('atmCashOutAmountWeight')
+				, atmCashInAmountWeight: this.get('atmCashInAmountWeight')
+				, beelineC: this.get('beelineC')
+				, sberbankC: this.get('sberbankC')
+				, balanceWeight: this.get('balanceWeight')
+				, salaryWeight: this.get('salaryWeight')
+			}
+		}
+	});
+</script>
+</dom-module>

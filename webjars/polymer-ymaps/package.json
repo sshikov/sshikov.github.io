@@ -1,0 +1,24 @@
+{
+  "name": "polymer-ymaps",
+  "version": "0.1.0",
+  "description": "",
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "~1.8.0",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.1",
+    "gulp-vulcanize": "^6.0.1",
+    "web-component-tester": "^5.0.0"
+  },
+  "scripts": {
+    "prepublish": "bower install",
+    "test": "gulp",
+    "remote-test": "gulp test --remote",
+    "vulcanize": "vulcanize -o dist/demo.html --inline --strip demo.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/just-boris/polymer-ymaps.git"
+  }
+}

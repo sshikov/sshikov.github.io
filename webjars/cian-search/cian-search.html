@@ -1,0 +1,127 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<dom-module id="cian-search">
+    <template>
+        <template is="dom-repeat" items="{{candidates}}">
+            <div><span>{{item.address}}</span></div>
+        </template>
+        <iron-ajax
+            id="cian-ajax"
+            url="/json/cian"
+            params='{{_getParams()}}'
+            handle-as="json"
+            last-response="{{result}}"
+            on-response="handleResponse"
+            on-error="handleError"
+            debounce-duration="300"
+        >
+        </iron-ajax>
+    </template>
+    <script>
+        Polymer({
+            is: 'cian-search'
+            , properties: {
+                result: { type: Object }
+        	, baseUrl: {
+       			type: String
+       			, value: "/json/cian"
+        	}
+                , polygon: {
+                    type: String
+//                    , observer: '_streetChanged'
+//                    , reflectToAttribute: true
+                }
+                , params: {
+                    type: Object
+                    , computed: '_getParams()'
+                }
+                , candidates: {
+                    type: Array
+                }
+            }
+            , ready: function () {
+                console.log("ready");
+            }
+            , attached: function () {
+                console.log("attached");
+            }
+            , attributeChanged: function(name, type) {
+                if(this.getAttribute(name)!="")
+                    console.log(this.localName + '#' + this.id + ' attribute ' + name + ' was changed to ' + this.getAttribute(name));
+            }
+            , handleResponse: function (data, request) {
+                console.log("handleResponse", data);
+                var headers= request.xhr.getAllResponseHeaders();
+                var json= data.detail.response;
+//                this.searchComplete(json);
+                this.fire("cian-search-complete", this.searchComplete(json));
+            }
+            , handleError: function (event) {
+                console.log(event.detail.request);
+                this.fire("cian-search-error", event);
+            }
+            , _getParams: function () {
+                return {
+                    'polygon': this.polygon
+                };
+            }
+    	    , search: function() {
+//    	        var ajax= Polymer.dom(this.root).getElementById("cian-ajax");
+                var ajax= document.getElementById("cian-ajax");
+                if(ajax) {
+                    var params= ajax.get("params");
+                    params.singleLine= this.street;
+                    ajax.set("params", this._getParams());
+                    this.debounce('cian-search', () => {
+                        ajax.generateRequest();
+                    }, 1000);
+                }
+            }
+            , searchComplete: function(result) {
+                console.log("cian-search-complete", result);
+//                var pointIcon= L.icon({
+//                    iconUrl: '/static/images/marker-icon.png'
+//                    , shadowUrl: '/static/images/marker-shadow.png'
+//                    , className: 'point-icon'
+//                });
+                var awIcon= L.AwesomeMarkers.icon({icon: 'home', markerColor: "blue"});
+                return _.map(result, function(point, key) {
+                    console.log("point", point, key);
+                    var parts= key.split(" ");
+                    var pointMarker= L.marker([parts[0], parts[1]], {
+                        clickable: true
+                        , draggable: true
+                        , icon: awIcon      // pointIcon
+                        , title: point.content.text
+//                        , pane: 'cian-pane'
+                        , 'key': key
+                    });
+                    pointMarker.on('dragend', function markerMove(moveEvent) {
+                        console.debug("marker-moved", moveEvent);
+                        var marker= moveEvent.target;
+                        var distance= moveEvent.distance;
+                        var latlng= marker.getLatLng();
+                        console.log("moved marker", marker.options.key, latlng);
+                    });
+                    var popup= "<b>Предложения: <a href='"+point.content.link+"'>"+point.content.text+"</a></b><br><ul>"
+                        +_.join(_.map(point.offers, function(offer, index) {
+                        return "<li>"+offer.link_text.join(", ")+"</li>"; //+offer.link_text[0]+offer.link_text[1]+offer.link_text[2]+" "+offer.link_text[3]+" "+offer.link_text[4]
+                        }), "")
+                        +"</ul>"
+                    ;
+                    pointMarker.bindPopup(popup);
+                    return pointMarker;
+                });
+            }
+        });
+    </script>
+</dom-module>
+<!--
+//                        var popup = L.popup({minWidth: 320, maxWidth: 320, autoPan: false; })
+//                            .setLatLng(latlng)
+//                            .setContent('<p>Hello world!<br />This is a nice popup.</p>')
+//                            .openOn(map);
+-->
+
+

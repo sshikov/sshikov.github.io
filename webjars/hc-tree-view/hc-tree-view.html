@@ -1,0 +1,55 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="hc-nested-list.html">
+<link rel="import" href="hc-tree-node.html">
+<link rel="import" href="hc-tree-view-behavior.html">
+
+<!--
+`hc-tree-view` an optimized tree-view based on a flat data structure.
+
+### Styling
+Custom property | Description | Default
+----------------|-------------|----------
+
+@demo demo/index.html
+-->
+
+<dom-module id="hc-tree-view">
+  <template>
+    <style>
+      :host {
+        display: block;
+
+        @apply --hc-tree-view;
+      }
+      #list {
+        @apply --hc-tree-view-list;
+      }
+      .item {
+        @apply --hc-tree-view-item;
+      }
+    </style>
+
+    <hc-nested-list
+      id="list"
+      items="[[items]]"
+      parts="{{_parts}}"
+      item-id-name="[[itemIdName]]"
+      item-parent-id-name="[[itemParentIdName]]"
+      >
+      <template>
+        <hc-tree-node
+          class="item"
+          item="[[item]]"
+        ></hc-tree-node>
+      </template>
+    </hc-nested-list>
+  </template>
+
+  <script>
+    Polymer({
+      /* global hc */
+      is: 'hc-tree-view',
+      behaviors: [hc.TreeViewBehavior]
+    });
+  </script>
+</dom-module>
