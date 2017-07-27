@@ -88,6 +88,7 @@
 	<!--link rel="import" href="/webjars/address-autocomplete/address-autocomplete.html">
 	<link rel="import" href="/webjars/login-form/login-form.html"-->
 
+	<link rel="import" href="/webjars/iron-localstorage/iron-localstorage.html">
 	<link rel="import" href="./my-controls.html">
 
 	<style>
@@ -126,7 +127,8 @@
 	}
 
 	.chart {
-		background: linear-gradient(0deg, #1BAC9B, #66A850);
+		background-color: #99DDBB;
+//		background: linear-gradient(0deg, #1BAC9B, #66A850);
 		width: 30%;
 		min-width: 500px;
 	}
@@ -141,6 +143,15 @@
 		color: white;
 		width: 20em;
 	}
+
+	.info {
+		background-color: #ECF5EA;
+	}
+
+	.leaflet-pane .leaflet-tile-pane img {
+		filter: grayscale(1);
+	}
+
 	</style>
 	<link href="./css/main.css" rel="stylesheet"/>
 	<script src="./js/leaflet-providers.js"></script>
@@ -151,6 +162,8 @@
 		var regionsSelected= {};
 		var layersSelected= {};
 		var layers= {};
+		var mapInfoControl;
+		var retry= {};
 
        		var highlightRegion= function highlightRegion(e, feature) {
        			console.log('chart Region: '+feature.properties.regionName, globals.regionsSelected);
@@ -307,6 +320,47 @@
               		}
 		};
 
+       		var onEachFeature= function onEachFeature(feature, layer) {
+			layer.on({
+              	        	mouseover: function highlightFeature(e) {
+					mapInfoControl.update(feature.properties.regionName);
+//       					console.log('mouseover', feature.properties.address);
+				}
+              	                , mouseout: function resetHighlight(e) {
+//       					console.log('mouseout', feature.properties.address);
+				}
+      				, click: function click(e) {
+              	                	var region= feature.properties.regionName;
+              			        var st= style(layer);
+              	                        var selected= !!feature.properties.selected;
+       					var selected= !!layer.options.selected;
+       			        	if(e.originalEvent.ctrlKey) {
+						console.log('ctrl-click', e, feature.properties.regionName, selected);
+   						if(!selected) {	// выбор
+   							st.color= '#FFA000';//#FFA000
+       							st.fillOpacity= 1.0;
+    							st.weight= 2;	
+       							regionsSelected[region]= {id: feature.properties.id, region: feature.properties.regionName, values: feature.properties.values}
+    							layersSelected[feature.properties.id]= e.target;
+   						} else {	// отмена
+   								var defst= style(feature);
+   								st.color= defst.color; //'#333366';
+       							st.fillOpacity= defst.fillOpacity; //0.1;
+       							delete regionsSelected[region];
+    							delete layersSelected[feature.properties.id];
+   						}
+   						feature.properties.selected= !selected;
+    						layer.options.selected= !selected;
+					} else {
+           			               	console.log('click', e, feature.properties.regionName, selected);
+           	                        }
+           			       	layer.setStyle(st);
+           	                       	return highlightRegion(e, feature);
+  				}
+			});
+       		};
+
+
 		var loadByName= function(regionName) {
 			var url = "https://nominatim.openstreetmap.org/search";
 			var map= $("#map")[0].map;
@@ -345,48 +399,7 @@
 				var layer= L.geoJson(feature, {
 					style: style
 					, pane: 'pane'+level
-					, onEachFeature: function onEachFeature(feature, layer) {
-      						layer.on({
-			       	                        mouseover: function highlightFeature(e) {
-								console.log('mouseover', feature.properties.address);
-//       	                			        	if(!feature.properties.selected)
-//       	                        					return highlight(e, feature);
-       							}
-			       	                        , mouseout: function resetHighlight(e) {
-								console.log('mouseout', feature.properties.address);
-//       	                			        	if(!feature.properties.selected)
-//    		                        				layer.setStyle(style(feature));
-       							}
-       							, click: function click(e) {
-			       	                        	var region= feature.properties.regionName;
-       	                			        	var st= style(layer);
-			       	                        	var selected= !!feature.properties.selected;
-								var selected= !!layer.options.selected;
-       	                			        	if(e.originalEvent.ctrlKey) {
-       		                        				console.log('ctrl-click', e, feature.properties.regionName, selected);
-       									if(!selected) {	// выбор
-       										st.color= '#FFA000';//#FFA000
-		   								st.fillOpacity= 1.0;
-										st.weight= 2;	
-   										regionsSelected[region]= {id: id, region: feature.properties.regionName, values: feature.properties.values}
-										layersSelected[id]= e.target;
-       									} else {	// отмена
-       										var defst= style(feature);
-       										st.color= defst.color; //'#333366';
-   										st.fillOpacity= defst.fillOpacity; //0.1;
-   										delete regionsSelected[region];
-										delete layersSelected[id];
-       									}
-       									feature.properties.selected= !selected;
-									layer.options.selected= !selected;
-			       	                        	} else {
-       		        			                	console.log('click', e, feature.properties.regionName, selected);
-			       	                        	}
-       	                			        	layer.setStyle(st);
-			       	                        	return highlightRegion(e, feature);
-	      						}
-       						});
-					}
+					, onEachFeature: onEachFeature
 				});
 				layer.addTo(map);
 				if(id==60189)
@@ -395,17 +408,49 @@
 				layers[id]= layer;
 			}).fail(function(error) {
 				console.log(error, id, region);
+				var retries= retry[id]||0;
+				if(!retry[id] || retry[id]<3) {
+					setTimeout(function() {
+						return loadGeoJson(id, region);
+					}, 100000);
+					retry[id]= retries++;
+				}
 			});
 		}
 
 		$(document).ready(function(e) {
 	    		$("#map").on("map-ready", function(e) {
 	    			var map= $("#map")[0].map;
-    				L.tileLayer.grayscale('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20 })
-	    				.addTo(map)
-    				;
+//    				L.tileLayer.grayscale('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20 })
+//	    				.addTo(map)
+//    				;
+
+				var baseLayer= L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18  }).addTo(map);
+//				baseLayer.getContainer().className += ' foobar';
+//				$(".leaflet-tile-pane").addClass("foobar");
+
+				var host = 'https://maps.omniscale.net/v2/{id}/style.grayscale/{z}/{x}/{y}.png';
+				var attribution = '&copy; 2017 &middot; <a href="https://maps.omniscale.com/">Omniscale</a> ' +
+			            '&middot; Map data: <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+//				L.tileLayer(host, { id: 'your-api-key', attribution: attribution}).addTo(map);
+
+
 //	    			loadGeoJson(60189);
 	    			depositLoader();
+				mapInfoControl= L.control();
+				mapInfoControl.options= { position: "topleft" };
+				mapInfoControl.onAdd= function (map) {
+		                        this._div = L.DomUtil.create('div', 'info');
+					this._info= L.DomUtil.create('div', '', this._div);
+		                        this.update("");
+		                        return this._div;
+				};
+				mapInfoControl.update= function (props) {
+		                        this._info.innerHTML = props+"<br>ctrl-click для сравнения";
+				};
+				mapInfoControl.addTo(map);
+
 	    		});
 	    		$("#reset").on("click", function(e) {
 	       			_.forEach(regionsSelected, function(v, k) {
@@ -424,24 +469,30 @@
 	</script>
 </head>
 <body unresolved>
+	<iron-localstorage
+		name="geojson-storage"
+		value="{{storedGeojson}}"
+		on-iron-localstorage-load="initStoredUser"></iron-localstorage>
+
 	<iron-iconset icons="device action navigation maps image editor" size="24"></iron-iconset>
 	<div class="layout vertical">
 		<div class="layout horizontal top">
-			<div><h2>Открытые данные</h2></div>
+			<div><h1>Открытые данные</h1></div>
 			<div class="flex"></div>
 			<div><img class="logo" src="images/white-logo-01.png"></div>
 		</div>
 		<div class="layout horizontal">
-			<leaflet-map latitude="55.753" longitude="37.629" zoom="13" maxZoom="18" id="map" noAttributionControl="true" class="layout flex" noZoomControl="true">
+			<leaflet-map latitude="55.753" longitude="37.629" zoom="4" maxZoom="12" id="map" noAttributionControl="true" class="layout flex" noZoomControl="true">
 				<!--<leaflet-layers-control id="layers-control" position="bottomright"></leaflet-layers-control>-->
 
-				<!--todo <leaflet-geojson></leaflet-geojson>-->
+				<!--todo <leaflet-geojson></leaflet-geojson>
 
 				<leaflet-tilelayer id="osm" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" max-zoom="19">
 					Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contr.,
 					<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,
 					Imagery © <a href="https://mapbox.com">Mapbox</a>
 				</leaflet-tilelayer>
+-->
 			</leaflet-map>
 
 			<!--geomarketing-map id="my-map" maxMarkers="300" class="layout flex"></geomarketing-map-->
