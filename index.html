@@ -5,16 +5,16 @@
 	<title>Открытые данные</title>
 	<script src="/webjars/lodash/lodash.min.js"></script>
 	<script src="/webjars/jquery/jquery.min.js"></script>
-	<script src="/js/globalVars.js"></script>
+	<script src="./js/globalVars.js"></script>
 
 	<script src="/webjars/d3/d3.js"></script>
-	<script src="/js/chroma.js"></script>
+	<script src="./js/chroma.js"></script>
 
 	<link href="/webjars/material-design-icons/material-icons.css" rel="stylesheet"/>
-	<link href="/css/font-awesome.css" rel="stylesheet"/>
-	<link href="/css/leaflet.awesome-markers.css" rel="stylesheet"/>
-	<link href="/css/MarkerCluster.css" rel="stylesheet"/>
-	<link href="/css/MarkerCluster.Default.css" rel="stylesheet"/>
+	<link href="./css/font-awesome.css" rel="stylesheet"/>
+	<link href="./css/leaflet.awesome-markers.css" rel="stylesheet"/>
+	<link href="./css/MarkerCluster.css" rel="stylesheet"/>
+	<link href="./css/MarkerCluster.Default.css" rel="stylesheet"/>
 
 	<!--<script src="components/webcomponentsjs/webcomponents-lite.js"></script>-->
 	<script>
@@ -71,7 +71,7 @@
 	<!--<link rel="import" href="/webjars/google-map/google-map-search.html">-->
 	<!--<link rel="import" href="/webjars/google-signin/google-signin.html">-->
 
-	<!--link rel="import" href="/webjars/leaflet-map/leaflet-map.html"-->
+	<link rel="import" href="/webjars/leaflet-map/leaflet-map.html">
 	<!--link rel="import" href="/webjars/geo-codec/geo-codec.html"-->
 
 	<!--link rel="import" href="/webjars/yandex-geocode/yandex-geocode.html">
@@ -177,61 +177,269 @@
             color: red;
         }
 	</style>
-	<link href="/css/main.css" rel="stylesheet"/>
-	<script src="/js/leaflet-providers.js"></script>
-	<script src="/js/leaflet.awesome-markers.min.js"></script>
+	<link href="./css/main.css" rel="stylesheet"/>
+	<script src="./js/leaflet-providers.js"></script>
+	<script src="./js/leaflet.awesome-markers.min.js"></script>
+	<script src="./js/TileLayer.Grayscale.js"></script>
 	<script>
-       		var depositLoader= function() {
-       			var map= $("#map")[0];
-       			var regions= {};
-       			var df= d3.timeParse("%d.%m.%Y");
-       			d3.text('/data/deposits.csv', function(csv) {
-       				var dsv= d3.dsvFormat('|');
-       				var deposits= dsv.parse(csv);
-       				var grouped= d3.nest()
-       					.key(function(d) { return d['Регион']; })
-       					.map(deposits)
-       				;
-				$("#controls")[0].set("regions", ['Россия'])ж
+     		var regionsData= {};
+		var regionsSelected= {};
+		var layers= {};
 
-       				var data= deposits
-       				.filter(function(d) { return d['Регион']!='Россия';})
-       				.map(function(d) {
-       					var region= d['Регион'];
-       					var value= Number(d['Показатель']);
-       					var date= df(d['Дата']);
-       					if(!regions[region]) {
-       						regions[region]= {values: []};
-       					}
-       					regions[region].values.push({'date': date, 'value': value});
-       				});
-       				_.forEach(regions, function(region, key) {
-       					console.log(region, key);
-//       					map.drawCity(key, {values: region.values}, highlightRegion);
-       				})
+       		var highlightRegion= function highlightRegion(e, feature) {
+       			console.log('chart Region: '+feature.properties.regionName, globals.regionsSelected);
+       			var layer = e.target;
+       			var latlng= e.latlng;
+       			if (!L.Browser.ie && !L.Browser.opera) { layer.bringToFront(); }
+
+       			// set the dimensions and margins of the graph
+       			var margin = {top: 20, right: 20, bottom: 30, left: 50},
+       				width = 500 - margin.left - margin.right,
+       				height = 500 - margin.top - margin.bottom;
+
+       			// set the ranges
+       			var x = d3.scaleTime().range([0, width]);
+       			var y = d3
+       				.scaleLinear() // .scaleLog()
+       				.range([height, 0])
+       			;
+
+       			// append the svg obgect to the body of the page
+       			// appends a 'group' element to 'svg'
+       			// moves the 'group' element to the top left margin
+       			var svg = d3.select("#chart")
+       				.html("")
+       				.append("svg")
+       					.attr("width", width + margin.left + margin.right)
+       					.attr("height", height + margin.top + margin.bottom)
+       					.append("g")
+       						.attr("transform",
+       						"translate(" + margin.left + "," + margin.top + ")")
+       			;
+
+       			var html= [];
+       			var i= 0;
+       			var colors= ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff'];
+       			var cols= [];
+//					cols.push({label: "Регион", type: "string"});
+       			_.forEach(regionsSelected, function(v, k) {
+       				console.log(k,v);
+       				var color= colors[i % 6];
+       				html.push("<li style='color: "+color+";'>"+k+"</li>");
+       				var data= regionsData[v.region].values;
+       				var region= v.region;	// k
+
+       				// define the line
+       				var valueline = d3.line()
+       					.curve(d3.curveBasis)
+       					.x(function(d) { return x(d.date); })
+       					.y(function(d) { return y(d.value); });
+
+       				// Scale the range of the data
+       				x.domain(d3.extent(data, function(d) { return d.date; }));
+       				y.domain([d3.min(data, function(d) { return d.value; }), d3.max(data, function(d) { return d.value; })]);
+
+       				// Add the valueline path. todo color
+       				svg.append("path")
+       					.data([data])
+//							.attr("class", "line")
+       					.attr("stroke", color)	//chroma.brewer.Blues[i]
+       					.attr("fill", "none")
+       					.attr("d", valueline)
+       				;
+       				i++;
        			});
+
+       			// Add the X Axis
+       			svg.append("g")
+       				.attr("transform", "translate(0," + height + ")")
+       				.call(d3.axisBottom(x)
+//							.ticks(3)
+       					.tickFormat(d3.timeFormat("%Y-%m"))
+       					.tickArguments([d3.timeMonth.every(6)])
+       				)
+       			;
+
+       			// Add the Y Axis
+       			svg.append("g")
+       				.call(d3.axisLeft(y)
+//							.tickFormat(d3.format(".3n"))
+       				)
+       		  	;
+
+       			var regions= "<ul>"+_.join(html, "")+"</ul>";
+       			$("#explain").html(regions);
+
+       			if(Object.keys(globals.regionsSelected).length>0) {
+//						$("#chart")[0].set("cols", cols);
+//						$("#chart").show();
+       				$("#explain").show();
+       			} else {
+//						$("#chart").hide();
+       				$("#explain").hide();
+       			}
        		};
 
-		var loadGeoJson= function(id) {
-			$.getJSON("https://nominatim.openstreetmap.org/reverse", {'format': 'json', "osm_id": id, 'polygon_geojson': 1, "osm_type": "R"}).then(function(json) { 
-				console.log(json.geojson); 
-				var map= $("#map")[0].map;
-				var layer= L.geojson(json.geojson, {});
-				map.fitBounds(layer.getBounds());
+       		var depositLoader= function() {
+       			var map= $("#map")[0];
+       			var df= d3.timeParse("%d.%m.%Y");
+       			d3.text('./data/regions.csv', function(csv) {
+       				var dsv= d3.dsvFormat('|');
+
+       				dsv.parse(csv)
+       				.filter(function(d) { return d.osmid!=0;})
+       				.map(function(d) {
+					loadGeoJson(d.osmid, d.region);
+				})
+
+
+        			d3.text('./data/deposits.csv', function(csv) {
+        				var dsv= d3.dsvFormat('|');
+        				var deposits= dsv.parse(csv);
+        				var grouped= d3.nest()
+        					.key(function(d) { return d['Регион']; })
+						.rollup(function(periods) {
+							return periods;
+						})
+        					.map(deposits)
+        				;
+					console.log(grouped);
+	 				var regionsList= [];
+ 					_.forEach(grouped.keys(), (value, key)=> { regionsList.push({code: key, text: value}); });
+ 					$("#controls")[0].set("regions", regionsList);
+ 					$("#controls")[0].set("parameters", [{code: 1, text: "Средняя сумма заявки на потребительский кредит"}]);
+
+        				var data= deposits
+ //       				.filter(function(d) { return d['Регион']!='Россия';})
+        				.map(function(d) {
+        					var region= d['Регион'];
+        					var value= Number(d['Показатель']);
+        					var date= df(d['Дата']);
+        					if(!regionsData[region]) {
+        						regionsData[region]= {values: []};
+        					}
+        					regionsData[region].values.push({'date': date, 'value': value});
+        				});
+        				_.forEach(regionsData, function(region, key) {
+ //       					console.log(region, key);
+ //					loadByName(region.text);
+        				})
+	       			});
+
+       			})
+
+       		};
+
+		var style= function(feature) {
+      		    	return {
+	                  	fill: true
+        	          	, stroke: true
+                	  	, color: '#333366'
+	                  	, weight: 1
+        	          	, opacity: 0.5
+                	  	, dashArray: ''
+                  		, fillColor: '#222222'
+	                  	, fillOpacity: 0.1
+              		}
+		};
+
+		var loadByName= function(regionName) {
+			var url = "https://nominatim.openstreetmap.org/search";
+			var map= $("#map")[0].map;
+			$.getJSON(url, {q: regionName, format: "json", polygon_geojson: 1}).then(function(json) { 
+				var layer= L.geoJson(json.geojson, {});
 				layer.addTo(map);
 			});
+		};
+
+		var loadGeoJson= function(id, region) {
+			var map= $("#map")[0].map;
+			$.getJSON("https://nominatim.openstreetmap.org/reverse", {'format': 'json', "osm_id": id, 'polygon_geojson': 1, "osm_type": "R"})
+			.then(function(json) { 
+				if(json.error) {
+					console.log(id, region, json.error);
+					return;
+				}
+//				console.log(json); 
+				var map= $("#map")[0].map;
+				var feature= {
+					type: "Feature"
+					, properties: {
+						id: id
+						, selected: false
+						, regionName: region
+						, display_name: json['display_name']
+						, address: json.address
+					}
+					, geometry: json.geojson
+				};
+		                var level= 410+(!!json.address['city'] ? 15 : (!!json.address['state'] ? 10 : 5));
+				console.log(json.address, level);
+                		if(!map.getPane('pane'+level))
+			                    map.createPane('pane'+level).style.zIndex = level;
+
+				var layer= L.geoJson(feature, {
+					style: style
+					, pane: 'pane'+level
+					, onEachFeature: function onEachFeature(feature, layer) {
+      						layer.on({
+			       	                        mouseover: function highlightFeature(e) {
+								console.log('mouseover', feature.properties.address);
+//       	                			        	if(!feature.properties.selected)
+//       	                        					return highlight(e, feature);
+       							}
+			       	                        , mouseout: function resetHighlight(e) {
+								console.log('mouseout', feature.properties.address);
+//       	                			        	if(!feature.properties.selected)
+//    		                        				layer.setStyle(style(feature));
+       							}
+       							, click: function click(e) {
+			       	                        	var region= feature.properties.regionName;
+       	                			        	var st= style(layer);
+			       	                        	var selected= !!feature.properties.selected;
+       	                			        	if(e.originalEvent.ctrlKey) {
+       		                        				console.log('ctrl-click', e, feature.properties.regionName, selected);
+       									if(!selected) {	// выбор
+       										st.color= '#660000';
+		   								st.fillOpacity= 0.3;
+   										regionsSelected[region]= {region: feature.properties.regionName, values: feature.properties.values}
+       									} else {	// отмена
+       										var defst= style(feature);
+       										st.color= defst.color; //'#333366';
+   										st.fillOpacity= defst.fillOpacity; //0.1;
+   										delete regionsSelected[region];
+       									}
+       									feature.properties.selected= !selected;
+			       	                        	} else {
+       		        			                	console.log('click', e, feature.properties.regionName, selected);
+			       	                        	}
+       	                			        	layer.setStyle(st);
+			       	                        	return highlightRegion(e, feature);
+	      						}
+       						});
+					}
+				});
+				layer.addTo(map);
+				if(id==60189)
+					map.fitBounds(layer.getBounds());
+
+				layers[id]= layer;
+			}).fail(function(error) {
+				console.log(error, id, region);
+			});
 		}
+
 		$(document).ready(function(e) {
+	    		$("#map").on("map-ready", function(e) {
+	    			var map= $("#map")[0].map;
+    				L.tileLayer.grayscale('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20 })
+	    				.addTo(map)
+    				;
+//	    			loadGeoJson(60189);
+	    			depositLoader();
+	    		});
 		});
 
-		$("#map").on("map-ready", function(e) {
-			var map= $("#map")[0].map;
-			L.tileLayer.grayscale('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20 })
-				.addTo(map)
-			;
-			loadGeoJson(80169);
-			depositLoader();
-		});
 	</script>
 </head>
 <body unresolved>
